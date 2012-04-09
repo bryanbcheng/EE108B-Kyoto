@@ -73,6 +73,30 @@ main:
 
 # GAME CODE GOES HERE
 
+# draw background color
+  li	$t1, 0 		# x coordinate
+  li	$t2, 0		# y coordinate
+  lw	$t3, 8($sp)	# background color
+  lw	$t4, 0($sp)	# max x coordinate
+  lw 	$t5, 4($sp)	# max y coordinate
+loop:	
+  lw	$a0, 0($t1)
+  jal	write_byte
+  lw	$a0, 0($t2)
+  jal 	write_byte
+  lw	$a0, 0($t3)
+  jal	write_byte
+  addi 	$t2, $t2, 1
+  bnq	$t2, $t5, loop
+  addi	$t1, $t1, 1
+  li	$t2, 0
+  bnq	$1, $t4, loop
+	
+# draw default ball and paddle
+draw:	
+	
+# start game loop
+
 # some things you need to do:
 # draw on top of the old ball and paddle to erase them
 # determine the new positions of the ball and paddle
@@ -101,6 +125,10 @@ main:
 
 write_byte:
 # IMPLEMENT THIS FIRST
+  la	$t1, 0xffff0008
+# poll ready bit
+  la	$t1, 0xffff000c
+  sb	$a0, 0($t1)
   jr    $ra
 
 # function: print_int
