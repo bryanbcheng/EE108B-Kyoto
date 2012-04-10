@@ -88,8 +88,8 @@ main:
   lw	$s3, 20($sp)
   lw	$s4, 16($sp)
   jal	draw
-  addi	$t4, $s0, 0
-  addi	$t5, $s1, 0
+  move	$t4, $s0
+  move	$t5, $s1
 #paddle	
   li	$s0, 0
   addi	$s1, $s1, -3
@@ -100,10 +100,56 @@ main:
 # start game loop
 # t4, t5 position of ball
 # t6, t7 velocity of ball
+# s5, s6 game screen size
   li	$t6, -1
   li	$t7, -1
+  lw    $s5, 0($sp)     # max x coordinate
+  lw    $s6, 4($sp)     # max y coordinate
+	
 game:
-  # check position of ball
+#erase ball
+  move	$s0, $t4
+  move	$s1, $t5
+  lw    $s2, 20($sp)
+  lw    $s3, 20($sp)
+  lw	$s4, 8($sp)
+  jal	draw
+#erase paddle
+  li	$s0, 0
+  li	$s1, 0
+  move	$s3, $s6
+  jal	draw
+checkx:
+  li	$t0, 0
+  beq	$t4, $t0, end_of_game
+  li	$t0, 1
+  beq	$t4, $t0, flipx
+  addi	$t0, $s5, -1
+  beq	$t4, $t0, flipx
+checky:	
+  li	$t0, 0
+  beq	$t5, $t0, flipy
+  addi	$t0, $s6, -1
+  beq	$t5, $t0, flipy	
+redraw:
+  add	$t4, $t4, $t6
+  add	$t5, $t5, $t7
+#redraw ball
+  move  $s0, $t4
+  move	$s1, $t5
+  lw    $s2, 20($sp)
+  lw    $s3, 20($sp)
+  lw    $s4, 16($sp)
+  jal   draw
+#redraw paddle
+  li	$s0, 0
+  addi  $s1, $s1, -3
+  lw    $s3, 24($sp)
+  lw    $s4, 12($sp)
+  jal   draw
+	
+  j	game
+	# check position of ball
 	# for both x and y
 	# invite t6 or t7 if necessary
   
@@ -136,9 +182,11 @@ game:
 
 write_byte:
 # IMPLEMENT THIS FIRST
-  la	$t1, 0xffff0008
-# poll ready bit
-  la	$t1, 0xffff000c
+  la	$t0, 0xffff0008
+  andi	$t1, $t0, 1
+  li	$t2, 1
+  bne	$t1, $t2, write_byte
+  la	$t0, 0xffff000c
   sb	$a0, 0($t1)
   jr    $ra
 
@@ -156,15 +204,26 @@ loop:
   jal	write_byte
   add	$a0, $t1, $s1
   jal	write_byte
-  addi	$a0, $s4, 0
+  move	$a0, $s4
   jal	write_byte
   addi	$t1, $t1, 1
-  bnq	$t1, $s3, loop
+  bne	$t1, $s3, loop
   addi	$t0, $t0, 1
   li	$t1, 0
-  bnq	$t0, $s2, loop
+  bne	$t0, $s2, loop
   jr	$ra
+
+
+# function: flipx
+flipx:	
+#load 0x8000
+#xor with s6
+  j	checky
 	
+# function: flipy
+flipy:
+#xor with s7
+  j	redraw
 	
 # function: print_int
 # displays the contents of $a0 as an integer on stdout
