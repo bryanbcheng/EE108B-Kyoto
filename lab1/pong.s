@@ -74,29 +74,40 @@ main:
 # GAME CODE GOES HERE
 
 # draw background color
-  li	$t1, 0 		# x coordinate
-  li	$t2, 0		# y coordinate
-  lw	$t3, 8($sp)	# background color
-  lw	$t4, 0($sp)	# max x coordinate
-  lw 	$t5, 4($sp)	# max y coordinate
-loop:	
-  lw	$a0, 0($t1)
-  jal	write_byte
-  lw	$a0, 0($t2)
-  jal 	write_byte
-  lw	$a0, 0($t3)
-  jal	write_byte
-  addi 	$t2, $t2, 1
-  bnq	$t2, $t5, loop
-  addi	$t1, $t1, 1
-  li	$t2, 0
-  bnq	$1, $t4, loop
+  li	$s0, 0 		# x coordinate
+  li	$s1, 0		# y coordinate
+  lw    $s2, 0($sp)     # max x coordinate
+  lw    $s3, 4($sp)     # max y coordinate
+  lw	$s4, 8($sp)	# background color
+  jal	draw
 	
-# draw default ball and paddle
-draw:	
-	
-# start game loop
+# draw default ball and paddle	
+  srl	$s0, $s2, 1
+  srl	$s1, $s3, 1
+  lw	$s2, 20($sp)
+  lw	$s3, 20($sp)
+  lw	$s4, 16($sp)
+  jal	draw
+  addi	$t4, $s0, 0
+  addi	$t5, $s1, 0
+#paddle	
+  li	$s0, 0
+  addi	$s1, $s1, -3
+  lw	$s3, 24($sp)
+  lw	$s4, 12($sp)
+  jal	draw
 
+# start game loop
+# t4, t5 position of ball
+# t6, t7 velocity of ball
+  li	$t6, -1
+  li	$t7, -1
+game:
+  # check position of ball
+	# for both x and y
+	# invite t6 or t7 if necessary
+  
+	
 # some things you need to do:
 # draw on top of the old ball and paddle to erase them
 # determine the new positions of the ball and paddle
@@ -131,6 +142,30 @@ write_byte:
   sb	$a0, 0($t1)
   jr    $ra
 
+# function: draw
+# x start stored in s0
+# y start stored in s1
+# x width stored in s2
+# y width stored in s3
+# color stored in s4
+draw:
+  li    $t0, 0
+  li    $t1, 0
+loop:
+  add	$a0, $t0, $s0
+  jal	write_byte
+  add	$a0, $t1, $s1
+  jal	write_byte
+  addi	$a0, $s4, 0
+  jal	write_byte
+  addi	$t1, $t1, 1
+  bnq	$t1, $s3, loop
+  addi	$t0, $t0, 1
+  li	$t1, 0
+  bnq	$t0, $s2, loop
+  jr	$ra
+	
+	
 # function: print_int
 # displays the contents of $a0 as an integer on stdout
 # note that it will only work if you run pong without the display, which consumes stdout
