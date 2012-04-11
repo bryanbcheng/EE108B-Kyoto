@@ -74,81 +74,81 @@ main:
 # GAME CODE GOES HERE
 
 # draw background color
-  li	$s0, 0 		# x coordinate
-  li	$s1, 0		# y coordinate
-  lw    $s2, 0($sp)     # max x coordinate
-  lw    $s3, 4($sp)     # max y coordinate
-  lw	$s4, 8($sp)	# background color
-  jal	draw
+#  li	$s0, 0 		# x coordinate
+#  li	$s1, 0		# y coordinate
+#  lw    $s2, 0($sp)     # max x coordinate
+#  lw    $s3, 4($sp)     # max y coordinate
+#  lw	$s4, 8($sp)	# background color
+#  jal	draw
 	
 # draw default ball and paddle	
-  srl	$s0, $s2, 1
-  srl	$s1, $s3, 1
-  lw	$s2, 20($sp)
-  lw	$s3, 20($sp)
-  lw	$s4, 16($sp)
-  jal	draw
-  move	$t4, $s0
-  move	$t5, $s1
+#  srl	$s0, $s2, 1
+#  srl	$s1, $s3, 1
+#  lw	$s2, 20($sp)
+#  lw	$s3, 20($sp)
+#  lw	$s4, 16($sp)
+#  jal	draw
+#  move	$t4, $s0
+#  move	$t5, $s1
 #paddle	
-  li	$s0, 0
-  addi	$s1, $s1, -3
-  lw	$s3, 24($sp)
-  lw	$s4, 12($sp)
-  jal	draw
+#  li	$s0, 0
+#  addi	$s1, $s1, -3
+#  lw	$s3, 24($sp)
+#  lw	$s4, 12($sp)
+#  jal	draw
 
 # start game loop
 # t4, t5 position of ball
 # t6, t7 velocity of ball
 # s5, s6 game screen size
-  li	$t6, -1
-  li	$t7, -1
-  lw    $s5, 0($sp)     # max x coordinate
-  lw    $s6, 4($sp)     # max y coordinate
+#  li	$t6, -1
+#  li	$t7, -1
+#  lw    $s5, 0($sp)     # max x coordinate
+#  lw    $s6, 4($sp)     # max y coordinate
 	
 game:
 #erase ball
-  move	$s0, $t4
-  move	$s1, $t5
-  lw    $s2, 20($sp)
-  lw    $s3, 20($sp)
-  lw	$s4, 8($sp)
-  jal	draw
+#  move	$s0, $t4
+#  move	$s1, $t5
+#  lw    $s2, 20($sp)
+#  lw    $s3, 20($sp)
+#  lw	$s4, 8($sp)
+#  jal	draw
 #erase paddle
-  li	$s0, 0
-  li	$s1, 0
-  move	$s3, $s6
-  jal	draw
+#  li	$s0, 0
+#  li	$s1, 0
+#  move	$s3, $s6
+#  jal	draw
 checkx:
-  li	$t0, 0
-  beq	$t4, $t0, end_of_game
-  li	$t0, 1
-  beq	$t4, $t0, flipx
-  addi	$t0, $s5, -1
-  beq	$t4, $t0, flipx
+#  li	$t0, 0
+#  beq	$t4, $t0, end_of_game
+#  li	$t0, 1
+#  beq	$t4, $t0, flipx
+#  addi	$t0, $s5, -1
+#  beq	$t4, $t0, flipx
 checky:	
-  li	$t0, 0
-  beq	$t5, $t0, flipy
-  addi	$t0, $s6, -1
-  beq	$t5, $t0, flipy	
+#  li	$t0, 0
+#  beq	$t5, $t0, flipy
+#  addi	$t0, $s6, -1
+#  beq	$t5, $t0, flipy	
 redraw:
-  add	$t4, $t4, $t6
-  add	$t5, $t5, $t7
+#  add	$t4, $t4, $t6
+#  add	$t5, $t5, $t7
 #redraw ball
-  move  $s0, $t4
-  move	$s1, $t5
-  lw    $s2, 20($sp)
-  lw    $s3, 20($sp)
-  lw    $s4, 16($sp)
-  jal   draw
+#  move  $s0, $t4
+#  move	$s1, $t5
+#  lw    $s2, 20($sp)
+#  lw    $s3, 20($sp)
+#  lw    $s4, 16($sp)
+#  jal   draw
 #redraw paddle
-  li	$s0, 0
-  addi  $s1, $s1, -3
-  lw    $s3, 24($sp)
-  lw    $s4, 12($sp)
-  jal   draw
+#  li	$s0, 0
+#  addi  $s1, $s1, -3
+#  lw    $s3, 24($sp)
+#  lw    $s4, 12($sp)
+#  jal   draw
 	
-  j	game
+#  j	game
 	# check position of ball
 	# for both x and y
 	# invite t6 or t7 if necessary
@@ -184,10 +184,9 @@ write_byte:
 # IMPLEMENT THIS FIRST
   la	$t0, 0xffff0008
   andi	$t1, $t0, 1
-  li	$t2, 1
+  li	$t2, 0
   bne	$t1, $t2, write_byte
-  la	$t0, 0xffff000c
-  sb	$a0, 0($t1)
+  sb	$a0, 0xffff000c
   jr    $ra
 
 # function: draw
@@ -216,13 +215,12 @@ loop:
 
 # function: flipx
 flipx:	
-#load 0x8000
-#xor with s6
+  neg	$s6, $s6
   j	checky
 	
 # function: flipy
 flipy:
-#xor with s7
+  neg	$s7, $s7
   j	redraw
 	
 # function: print_int
