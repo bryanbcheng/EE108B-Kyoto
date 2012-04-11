@@ -183,9 +183,9 @@ redraw:
 write_byte:
 # IMPLEMENT THIS FIRST
   la	$t0, 0xffff0008
-  andi	$t1, $t0, 1
-  li	$t2, 0
-  bne	$t1, $t2, write_byte
+  lw	$t1, 0($t0)
+  andi	$t2, $t1, 1
+  blez	$t2, write_byte
   sb	$a0, 0xffff000c
   jr    $ra
 
