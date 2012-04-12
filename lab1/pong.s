@@ -58,18 +58,18 @@ main:
 
 # this is an example of proper use of the display protocol
 # we have provided a correctly implemented "write_byte" function below
-  li    $a0, 0
-  jal   write_byte
-  li    $a0, 0
-  jal   write_byte
-  li    $a0, 0x4
-  jal   write_byte
-  li    $a0, 39
-  jal   write_byte
-  li    $a0, 29
-  jal   write_byte
-  li    $a0, 0x4
-  jal   write_byte
+#  li    $a0, 0
+#  jal   write_byte
+#  li    $a0, 0
+#  jal   write_byte
+#  li    $a0, 0x4
+#  jal   write_byte
+#  li    $a0, 39
+#  jal   write_byte
+#  li    $a0, 29
+#  jal   write_byte
+#  li    $a0, 0x4
+#  jal   write_byte
 
 # GAME CODE GOES HERE
 
@@ -103,8 +103,6 @@ main:
 # s5, s6 game screen size
   li	$s6, -1
   li	$s7, -1
-#  lw    $s5, 0($sp)     # max x coordinate
-#  lw    $s6, 4($sp)     # max y coordinate
 	
 game:
 #erase ball
@@ -116,8 +114,16 @@ game:
   jal	draw
 #erase paddle
   li	$s0, 0
+  addi	$s1, $s1, -3
+  bgez	$s1, erasepaddlejump1
   li	$s1, 0
-  lw	$s3, 4($sp)
+erasepaddlejump1:
+  lw	$s3, 24($sp)
+  add	$t0, $s3, $s1
+  lw	$t1, 4($sp)
+  bleu	$t0, $t1, erasepaddlejump2
+  sub	$s1, $t1, $s3
+erasepaddlejump2:	
   jal	draw
 
 checkx:
@@ -145,7 +151,15 @@ redraw:
 #redraw paddle
   li	$s0, 0
   addi  $s1, $s1, -3
+  bgez 	$s1, redrawpaddlejump1
+  li	$s1, 0
+redrawpaddlejump1:	
   lw    $s3, 24($sp)
+  add   $t0, $s3, $s1
+  lw	$t1, 4($sp)
+  bleu	$t0, $t1, redrawpaddlejump2
+  sub   $s1, $t1, $s3
+redrawpaddlejump2:	
   lw    $a1, 12($sp)
   jal   draw
 	
