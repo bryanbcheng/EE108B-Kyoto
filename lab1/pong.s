@@ -101,31 +101,10 @@ main:
 # s4, s5 position of ball
 # s6, s7 velocity of ball
 # s5, s6 game screen size
+game:	
   li	$s6, -1
   li	$s7, -1
 	
-game:
-#erase ball
-  move	$s0, $s4
-  move	$s1, $s5
-  lw    $s2, 20($sp)
-  lw    $s3, 20($sp)
-  lw	$a1, 8($sp)
-  jal	draw
-#erase paddle
-  li	$s0, 0
-  addi	$s1, $s1, -3
-  bgez	$s1, erasepaddlejump1
-  li	$s1, 0
-erasepaddlejump1:
-  lw	$s3, 24($sp)
-  add	$t0, $s3, $s1
-  lw	$t1, 4($sp)
-  bleu	$t0, $t1, erasepaddlejump2
-  sub	$s1, $t1, $s3
-erasepaddlejump2:	
-  jal	draw
-
 checkx:
   blez	$s4, end_the_game
   li	$t0, 1
@@ -138,6 +117,29 @@ checky:
   lw	$t0, 4($sp)
   addi	$t0, $t0, -1
   beq	$s5, $t0, flipy	
+
+erase:	
+# erase ball
+  move  $s0, $s4
+  move  $s1, $s5
+  lw    $s2, 20($sp)
+  lw    $s3, 20($sp)
+  lw    $a1, 8($sp)
+  jal   draw
+# erase paddle
+  li    $s0, 0
+  addi  $s1, $s1, -3
+  bgez  $s1, erasepaddlejump1
+  li    $s1, 0
+erasepaddlejump1:
+  lw    $s3, 24($sp)
+  add   $t0, $s3, $s1
+  lw    $t1, 4($sp)
+  bleu  $t0, $t1, erasepaddlejump2
+  sub   $s1, $t1, $s3
+erasepaddlejump2:
+  jal   draw
+	
 redraw:
   add	$s4, $s4, $s6
   add	$s5, $s5, $s7
@@ -233,7 +235,7 @@ flipx:
 # function: flipy
 flipy:
   neg	$s7, $s7
-  j	redraw
+  j	erase
 	
 # function: print_int
 # displays the contents of $a0 as an integer on stdout
