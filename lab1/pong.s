@@ -96,6 +96,10 @@ main:
   lw	$s3, 24($sp)
   lw	$a1, 12($sp)
   jal	draw
+#right paddle
+  lw	$s0, 0($sp)
+  addi 	$s0, $s0, -1
+  jal	draw
 
 # start game loop
 # s4, s5 position of ball
