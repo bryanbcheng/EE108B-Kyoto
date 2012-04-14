@@ -115,7 +115,7 @@ checkx:
   li	$t0, 1
   beq	$s4, $t0, flipx
   lw	$t0, 0($sp)
-  addi	$t0, $t0, -1
+  addi	$t0, $t0, -2
   beq	$s4, $t0, flipx
 checky:	
   blez	$s5, flipy
@@ -144,6 +144,10 @@ erasepaddlejump1:
   sub   $s1, $t1, $s3
 erasepaddlejump2:
   jal   draw
+#right paddle
+  lw    $s0, 0($sp)
+  addi  $s0, $s0, -1
+  jal   draw	
 	
 redraw:
   add	$s4, $s4, $s6
@@ -169,6 +173,10 @@ redrawpaddlejump1:
 redrawpaddlejump2:	
   lw    $a1, 12($sp)
   jal   draw
+#right paddle
+  lw    $s0, 0($sp)
+  addi  $s0, $s0, -1
+  jal   draw	
 	
   j	game
 	
