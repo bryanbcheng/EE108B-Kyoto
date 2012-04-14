@@ -101,10 +101,11 @@ main:
 # s4, s5 position of ball
 # s6, s7 velocity of ball
 # s5, s6 game screen size
-game:	
+gamebegin:	
   li	$s6, -1
   li	$s7, -1
-	
+
+game:	
 checkx:
   blez	$s4, end_the_game
   li	$t0, 1
