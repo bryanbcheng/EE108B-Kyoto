@@ -56,30 +56,13 @@ main:
   li    $t0, 6          # paddle height
   sw    $t0, 24($sp)
 
-# this is an example of proper use of the display protocol
-# we have provided a correctly implemented "write_byte" function below
-#  li    $a0, 0
-#  jal   write_byte
-#  li    $a0, 0
-#  jal   write_byte
-#  li    $a0, 0x4
-#  jal   write_byte
-#  li    $a0, 39
-#  jal   write_byte
-#  li    $a0, 29
-#  jal   write_byte
-#  li    $a0, 0x4
-#  jal   write_byte
-
-# GAME CODE GOES HERE
-
 # draw background color
   li	$s0, 0	 	# x coordinate
   li	$s1, 0		# y coordinate
   lw    $s2, 0($sp)     # max x coordinate
   lw    $s3, 4($sp)     # max y coordinate
   lw	$a1, 8($sp)	# background color
-#  jal	draw
+  jal	draw
 	
 # draw default ball and paddle	
   srl	$s0, $s2, 1
@@ -113,47 +96,47 @@ game:
 checkx:
   blez	$s4, end_the_game
   li	$t0, 1
-  beq	$s4, $t0, flipx
+  beq	$s4, $t0, flipx		# flip x if hits left paddle
   lw	$t0, 0($sp)
-  addi	$t0, $t0, -2
-  beq	$s4, $t0, flipx
+  addi	$t0, $t0, -2		
+  beq	$s4, $t0, flipx		# flip x if hits right paddle
 checky:	
-  blez	$s5, flipy
+  blez	$s5, flipy		# flip y if hits top of screen
   lw	$t0, 4($sp)
   addi	$t0, $t0, -1
-  beq	$s5, $t0, flipy	
+  beq	$s5, $t0, flipy		# flip y if hits bottom of screen
 
 erase:	
 # erase ball
-  move  $s0, $s4
-  move  $s1, $s5
-  lw    $s2, 20($sp)
-  lw    $s3, 20($sp)
-  lw    $a1, 8($sp)
+  move  $s0, $s4		# load current x pos
+  move  $s1, $s5		# load current y pos
+  lw    $s2, 20($sp)		# load width of ball
+  lw    $s3, 20($sp)		# load height of ball
+  lw    $a1, 8($sp)		# load color of ball
   jal   draw
 # erase paddle
-  li    $s0, 0
-  addi  $s1, $s1, -3
-  bgez  $s1, erasepaddlejump1
+  li    $s0, 0			# left paddle at 0 coordinate
+  addi  $s1, $s1, -3		# y pos of top of paddle
+  bgez  $s1, erasepaddlejump1	# check if top of paddle above top of screen
   li    $s1, 0
 erasepaddlejump1:
-  lw    $s3, 24($sp)
+  lw    $s3, 24($sp)		# load max y coordinate
   add   $t0, $s3, $s1
   lw    $t1, 4($sp)
-  bleu  $t0, $t1, erasepaddlejump2
+  bleu  $t0, $t1, erasepaddlejump2	# check if bottom of paddle below bottom of screen
   sub   $s1, $t1, $s3
 erasepaddlejump2:
   jal   draw
 #right paddle
   lw    $s0, 0($sp)
-  addi  $s0, $s0, -1
+  addi  $s0, $s0, -1		# draw on rightmost column
   jal   draw	
 	
 redraw:
-  add	$s4, $s4, $s6
-  add	$s5, $s5, $s7
+  add	$s4, $s4, $s6		# recalculate new x pos
+  add	$s5, $s5, $s7		# recalculate new y pos
 #redraw ball
-  move  $s0, $s4
+  move  $s0, $s4		# similar arithmatic as above
   move	$s1, $s5
   lw    $s2, 20($sp)
   lw    $s3, 20($sp)
@@ -178,26 +161,13 @@ redrawpaddlejump2:
   addi  $s0, $s0, -1
   jal   draw	
 	
-  j	game
+  j	game			# loop back to beginning
 	
-# some things you need to do:
-# draw on top of the old ball and paddle to erase them
-# determine the new positions of the ball and paddle
-# draw the ball and paddle again
-
-# before entering this loop, you should draw the background color
-# over the entire grid
-
-# this will exit SPIM and stop the display from asking for more output
-# the implementation is below
   j     end_the_game
 
  
 
 # write useful standalone functions here
-
-# functions can call other functions, but make sure to use consistent calling conventions
-# and to restore return addresses properly
 
 # function: write_byte
 # write the byte in $a0 to the transmitter data register after polling the ready bit
@@ -207,7 +177,6 @@ redrawpaddlejump2:
 # the "la" pseudoinstruction is very convenient for loading these
 
 write_byte:
-# IMPLEMENT THIS FIRST
   la	$t0, 0xffff0008
   lw	$t0, 0($t0)
   andi	$t1, $t0, 1
@@ -227,16 +196,16 @@ draw:
   li    $t4, 0
 loop:
   add	$a0, $t3, $s0
-  jal	write_byte
+  jal	write_byte		# write x coordinate
   add	$a0, $t4, $s1
-  jal	write_byte
+  jal	write_byte		# write y coordinate
   move	$a0, $a1
-  jal	write_byte
+  jal	write_byte		# write color
   addi	$t3, $t3, 1
-  bne	$t3, $s2, loop
+  bne	$t3, $s2, loop		# for x loop
   li	$t3, 0
   addi	$t4, $t4, 1
-  bne	$t4, $s3, loop
+  bne	$t4, $s3, loop		# for y loop
   jr	$t2
 
 
