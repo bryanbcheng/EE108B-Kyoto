@@ -62,7 +62,7 @@ main:
   lw    $s2, 0($sp)     # max x coordinate
   lw    $s3, 4($sp)     # max y coordinate
   lw	$a1, 8($sp)	# background color
-  jal	draw
+#  jal	draw
 	
 # draw default ball and paddle	
   srl	$s0, $s2, 1
@@ -73,7 +73,7 @@ main:
   jal	draw
   move	$s4, $s0
   move	$s5, $s1
-#paddle	
+#left paddle	
   li	$s0, 0
   addi	$s1, $s1, -3
   lw	$s3, 24($sp)
@@ -83,7 +83,19 @@ main:
   lw	$s0, 0($sp)
   addi 	$s0, $s0, -1
   jal	draw
-
+#top paddle
+  lw	$s0, 0($sp)
+  srl	$s0, $s0, 1
+  addi	$s0, $s0, -3
+  li	$s1, 0
+  lw	$s2, 24($sp)
+  lw	$s3, 20($sp)
+  jal	draw
+#bottom paddle
+  lw	$s1, 4($sp)
+  addi	$s1, $s1, -1
+  jal 	draw
+	
 # start game loop
 # s4, s5 position of ball
 # s6, s7 velocity of ball
@@ -100,10 +112,11 @@ checkx:
   lw	$t0, 0($sp)
   addi	$t0, $t0, -2		
   beq	$s4, $t0, flipx		# flip x if hits right paddle
-checky:	
-  blez	$s5, flipy		# flip y if hits top of screen
+checky:
+  li	$t0, 1
+  beq	$s5, $t0, flipy		# flip y if hits top of screen
   lw	$t0, 4($sp)
-  addi	$t0, $t0, -1
+  addi	$t0, $t0, -2
   beq	$s5, $t0, flipy		# flip y if hits bottom of screen
 
 erase:	
@@ -120,9 +133,9 @@ erase:
   bgez  $s1, erasepaddlejump1	# check if top of paddle above top of screen
   li    $s1, 0
 erasepaddlejump1:
-  lw    $s3, 24($sp)		# load max y coordinate
+  lw    $s3, 24($sp)		# load paddle size
   add   $t0, $s3, $s1
-  lw    $t1, 4($sp)
+  lw    $t1, 4($sp)		# load max y coordinate
   bleu  $t0, $t1, erasepaddlejump2	# check if bottom of paddle below bottom of screen
   sub   $s1, $t1, $s3
 erasepaddlejump2:
@@ -130,7 +143,27 @@ erasepaddlejump2:
 #right paddle
   lw    $s0, 0($sp)
   addi  $s0, $s0, -1		# draw on rightmost column
-  jal   draw	
+  jal   draw
+# erase vert paddles
+  move	$s0, $s4		# x pos of ball
+  addi	$s0, $s0, -3		# x pos of left end of paddle
+  li    $s1, 0                  # top paddle at 0 coordinate
+  bgez  $s0, erasepaddlejump3   # check if left of paddle past left of screen
+  li    $s0, 0
+erasepaddlejump3:
+  lw    $s2, 24($sp)            # load paddle size
+  add   $t0, $s2, $s0
+  lw    $t1, 0($sp)
+  bleu  $t0, $t1, erasepaddlejump4      # check if right of paddle past right of screen
+  sub   $s0, $t1, $s2
+erasepaddlejump4:
+  lw	$s3, 20($sp)		# height of paddle
+  jal   draw
+#bottom paddle
+  lw    $s1, 4($sp)
+  addi  $s1, $s1, -1            # draw on lowest row
+  jal   draw
+	
 	
 redraw:
   add	$s4, $s4, $s6		# recalculate new x pos
@@ -160,6 +193,27 @@ redrawpaddlejump2:
   lw    $s0, 0($sp)
   addi  $s0, $s0, -1
   jal   draw	
+# redraw vert paddles
+  move  $s0, $s4                # x pos of ball
+  addi  $s0, $s0, -3            # x pos of left end of paddle
+  li    $s1, 0                  # top paddle at 0 coordinate
+  bgez  $s0, redrawpaddlejump3  # check if left of paddle past left of screen
+  li    $s0, 0
+redrawpaddlejump3:
+  lw    $s2, 24($sp)            # load paddle size
+  add   $t0, $s2, $s0
+  lw    $t1, 0($sp)
+  bleu  $t0, $t1, redrawpaddlejump4      # check if right of paddle past right of screen
+  sub   $s0, $t1, $s2
+redrawpaddlejump4:
+  lw    $s3, 20($sp)            # height of paddle
+  jal   draw
+#bottom paddle
+  lw    $s1, 4($sp)
+  addi  $s1, $s1, -1            # draw on lowest row
+  jal   draw
+	
+
 	
   j	game			# loop back to beginning
 	
