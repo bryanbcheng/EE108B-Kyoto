@@ -229,22 +229,27 @@ module irom(clka, addra, douta);
   // sllv $t0, $t2, $t4 t0 = 6
   assign memory[ 56] = {`SPECIAL, `T4, `T2, `T0, `NULL, `SLLV};
   // sllv $t0, $t3, $t4 t0 = -6
-  assign memory[ 57] = {`SPECIAL, `T4, `T3, `T0, `NULL, `SLLV};
-  
+  assign memory[ 57] = {`SPECIAL, `T4, `T3, `T0, `NULL, `SLLV}; 
   assign memory[ 58] = {`NOP};
-  assign memory[ 59] = {`NOP};
-  assign memory[ 60] = {`NOP};
-  assign memory[ 61] = {`NOP};
-  assign memory[ 62] = {`NOP};
-  assign memory[ 63] = {`NOP};
-  assign memory[ 64] = {`NOP};
-  assign memory[ 65] = {`NOP};
-  assign memory[ 66] = {`NOP};
-  assign memory[ 67] = {`NOP};
-  assign memory[ 68] = {`NOP};
-  assign memory[ 69] = {`NOP};
-  assign memory[ 70] = {`NOP};
-  assign memory[ 71] = {`NOP};
+  // beq $t2, $t2, 1 branch to 61
+  assign memory[ 59] = {`BEQ, `T2, `T2, 16'd1};
+  assign memory[ 60] = {`ADDI, `T0, `T0, 16'd2000};
+  // bne $t3, $t2, 1 branch to 63
+  assign memory[ 61] = {`BNE, `T2, `T3, 16'd1};
+  assign memory[ 62] = {`ADDI, `T0, `T0, 16'd500};
+  // bltz $t3, 1 branch to 65
+  assign memory[ 63] = {`BLTZ, `NULL, `T3, 16'd1};
+  assign memory[ 64] = {`ADDI, `T0, `T0, 16'd600};
+  // blez $t3, 1 branch to 67
+  assign memory[ 65] = {`BLEZ, `NULL, `T3, 16'd1};
+  assign memory[ 66] = {`ADDI, `T0, `T0, 16'd700};
+  // bgtz $t2, 1 branch to 69
+  assign memory[ 67] = {`BGTZ, `NULL, `T2, 16'd1};
+  assign memory[ 68] = {`ADDI, `T0, `T0, 16'd800};
+  // bgez $t2, 1 branch to 71
+  assign memory[ 69] = {`BGEZ, `NULL, `T2, 16'd0};
+  assign memory[ 70] = {`ADDI, `T0, `T0, 16'd1000};
+  assign memory[ 71] = {`LUI, `NULL, `T0, 16'd50};
   assign memory[ 72] = {`NOP};
   assign memory[ 73] = {`NOP};
   assign memory[ 74] = {`NOP};
@@ -268,21 +273,19 @@ module irom(clka, addra, douta);
   assign memory[ 92] = {`NOP};
   assign memory[ 93] = {`NOP};
   // beq $t2, $t2, offset
-  assign memory[ 94] = {`BEQ, `T2, `T2, -16'd2};
+  assign memory[ 94] = {`NOP};
   // bne $t3, $t2, offset
-  assign memory[ 95] = {`BNE, `T2, `T3, -16'd2};
+  assign memory[ 95] = {`NOP};
   // bltz $t3, offset
-  assign memory[ 96] = {`BLTZ, `NULL, `T3, -16'd2};
+  assign memory[ 96] = {`NOP};
   // blez $t3, offset
-  assign memory[ 97] = {`BLEZ, `NULL, `T3, -16'd2};
+  assign memory[ 97] = {`NOP};
   // bgtz $t2, offset
-  assign memory[ 98] = {`BGTZ, `NULL, `T2, -16'd2};
+  assign memory[ 98] = {`NOP};
   // bgez $t2, offset
-  assign memory[ 99] = {`BGEZ, `NULL, `T2, -16'd2};
+  assign memory[ 99] = {`NOP};
   // lui $t0, 50
-  assign memory[100] = {`LUI, `NULL, `T0, 16'd50};
-  assign memory[101] = {`NOP};
-  assign memory[102] = {`NOP};
+  assign memory[100] = {`NOP};
   assign memory[103] = {`NOP};
   assign memory[104] = {`NOP};
   assign memory[105] = {`NOP};
