@@ -231,6 +231,7 @@ module irom(clka, addra, douta);
   // sllv $t0, $t3, $t4 t0 = -6
   assign memory[ 57] = {`SPECIAL, `T4, `T3, `T0, `NULL, `SLLV}; 
   assign memory[ 58] = {`NOP};
+  // use ALUOp reads to make sure ADDI instructions are never called
   // beq $t2, $t2, 1 branch to 61
   assign memory[ 59] = {`BEQ, `T2, `T2, 16'd1};
   assign memory[ 60] = {`ADDI, `T0, `T0, 16'd2000};
@@ -246,7 +247,7 @@ module irom(clka, addra, douta);
   // bgtz $t2, 1 branch to 69
   assign memory[ 67] = {`BGTZ, `NULL, `T2, 16'd1};
   assign memory[ 68] = {`ADDI, `T0, `T0, 16'd800};
-  // bgez $t2, 1 branch to 71
+  // bgez $t2, 1 branch to 70
   assign memory[ 69] = {`BGEZ, `NULL, `T2, 16'd0};
   assign memory[ 70] = {`ADDI, `T0, `T0, 16'd1000};
   assign memory[ 71] = {`LUI, `NULL, `T0, 16'd50};
