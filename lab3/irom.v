@@ -178,46 +178,46 @@ module irom(clka, addra, douta);
 
   // X to D
   // addi $t2, $zero, 16
-  assign memory[ 50] = {`NOP};
+  assign memory[ 50] = {`ADDI, `ZERO, `T2, 16'd16};
   // bne $t2, $t3, branch to 51
-  assign memory[ 51] = {`NOP};
+  assign memory[ 51] = {`BNE, `T2, `T3, -16'd1};
   assign memory[ 52] = {`NOP};
   assign memory[ 53] = {`NOP};
   assign memory[ 54] = {`NOP};
 
   // X to X
-  // and $t1, $zero, $t1
-  assign memory[ 55] = {`NOP};
+  // addi $t1, $zero, 2
+  assign memory[ 55] = {`ADDI, `ZERO, `T1, 16'd2};
   // add $t0, $t1, $t1
-  assign memory[ 56] = {`NOP};
+  assign memory[ 56] = {`SPECIAL, `T1, `T1, `T0, `NULL, `ADD};
   assign memory[ 57] = {`NOP};
   assign memory[ 58] = {`NOP};
   assign memory[ 59] = {`NOP};
 
   // X to M
-  // addi $t2, $zero, 160
-  assign memory[ 60] = {`NOP};
+  // addi $t2, $zero, 40
+  assign memory[ 60] = {`ADDI, `ZERO, `T2, 16'd40};
   // lw $t0, 0($t2)
-  assign memory[ 61] = {`NOP};
+  assign memory[ 61] = {`LW, `T2, `T0, 16'd0};
   assign memory[ 62] = {`NOP};
   assign memory[ 63] = {`NOP};
   assign memory[ 64] = {`NOP};
 
   // M to D
   // lw $t1, 0($t2)
-  assign memory[ 65] = {`NOP};
+  assign memory[ 65] = {`LW, `T2, `T1, 16'd0};
   assign memory[ 66] = {`NOP};
   // bne $t0, $t1, branch to 67
-  assign memory[ 67] = {`NOP};
+  assign memory[ 67] = {`BNE, `T0, `T1, -16'd1};
   assign memory[ 68] = {`NOP};
   assign memory[ 69] = {`NOP};
 
   // M to X
   // lw $t3, 0($t2)
-  assign memory[ 70] = {`NOP};
+  assign memory[ 70] = {`LW, `T2, `T3, 16'd0};
   assign memory[ 71] = {`NOP};
   // add $t0, $t3, $t3
-  assign memory[ 72] = {`NOP};
+  assign memory[ 72] = {`ADD, `T3, `T3, `T0, `NULL, `ADD};
   assign memory[ 73] = {`NOP};
   assign memory[ 74] = {`NOP};
 
