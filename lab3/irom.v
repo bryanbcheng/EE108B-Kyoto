@@ -223,18 +223,18 @@ module irom(clka, addra, douta);
 
   // M to M
   // lw $t0, 0($t2)
-  assign memory[ 75] = {`NOP};
+  assign memory[ 75] = {`LW, `T2, `T0, 16'd0};
   assign memory[ 76] = {`NOP};
   // lw $t1, 20($t1) should be same value
-  assign memory[ 77] = {`NOP};
+  assign memory[ 77] = {`LW, `T1, `T1, 16'd20};
   assign memory[ 78] = {`NOP};
   assign memory[ 79] = {`NOP};
 
   // load followed by dependent ALU
   // lw $t4, 0($t2)
-  assign memory[ 80] = {`NOP};
+  assign memory[ 80] = {`LW, `T2, `T4, 16'd0};
   // add $t0, $t4, $t4
-  assign memory[ 81] = {`NOP};
+  assign memory[ 81] = {`SPECIAL, `T4, `T4, `T0, `NULL, `ADD};
   assign memory[ 82] = {`NOP};
   assign memory[ 83] = {`NOP};
   assign memory[ 84] = {`NOP};
@@ -246,9 +246,9 @@ module irom(clka, addra, douta);
 
   // load followed by dependent store
   // lw $t5, 0($t2) loading from 40
-  assign memory[ 90] = {`NOP};
+  assign memory[ 90] = {`LW, `T2, `T5, 16'd0};
   // sw $t5, 0($t3) storing at 20
-  assign memory[ 91] = {`NOP};
+  assign memory[ 91] = {`SW, `T3, `T5, 16'd0};
   assign memory[ 92] = {`NOP};
   assign memory[ 93] = {`NOP};
   assign memory[ 94] = {`NOP};
@@ -260,9 +260,9 @@ module irom(clka, addra, douta);
 
   // load followed by dependent branch
   // lw $t0, 0($t2)
-  assign memory[100] = {`NOP};
+  assign memory[100] = {`LW, `T2, `T0, 16'd0};
   // beq $t0, $t2, branch to 101, same value before load
-  assign memory[101] = {`NOP};
+  assign memory[101] = {`BEQ, `T2, `T0, -16'd1};
   assign memory[102] = {`NOP};
   assign memory[103] = {`NOP};
   assign memory[104] = {`NOP};
