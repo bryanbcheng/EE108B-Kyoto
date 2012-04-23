@@ -193,8 +193,43 @@ module Decode(
     casex({op, funct})
       // DETERMINE THE ALU OPERATION TO PERFORM FOR EACH OP/FUNCTION CODE
  	
+      {`SPECIAL, `ADD}:	    ALUOp = `select_alu_add;
+      {`SPECIAL, `ADDU}:    ALUOp = `select_alu_addu;
+      {`ADDI, `dc6}:        ALUOp = `select_alu_add;
+      {`ADDIU, `dc6}:       ALUOp = `select_alu_addu;
 
-      // these are given to you:
+      {`SPECIAL, `SUB}:	    ALUOp = `select_alu_sub;
+      {`SPECIAL, `SUBU}:    ALUOp = `select_alu_subu;
+
+      {`SPECIAL, `SLT}:	    ALUOp = `select_alu_slt;
+      {`SPECIAL, `SLTU}:    ALUOp = `select_alu_sltu;
+      {`SLTI, `dc6}:	    ALUOp = `select_alu_slt;
+      {`SLTIU, `dc6}:	    ALUOp = `select_alu_sltu;
+
+      {`SPECIAL, `AND}:	    ALUOp = `select_alu_and;
+      {`ANDI, `dc6}:	    ALUOp = `select_alu_and;
+
+      {`SPECIAL, `OR}:	    ALUOp = `select_alu_or;
+      {`ORI, `dc6}:	    ALUOp = `select_alu_or;
+
+      {`SPECIAL, `XOR}:	    ALUOp = `select_alu_xor;
+      {`XORI, `dc6}:	    ALUOp = `select_alu_xor;
+
+      {`SPECIAL, `NOR}:	    ALUOp = `select_alu_nor;
+
+      {`SPECIAL, `SRL}:	    ALUOp = `select_alu_srl;
+      {`SPECIAL, `SRA}:	    ALUOp = `select_alu_sra;
+      {`SPECIAL, `SLL}:	    ALUOp = `select_alu_sll;
+      {`SPECIAL, `SRLV}:    ALUOp = `select_alu_srl;
+      {`SPECIAL, `SRAV}:    ALUOp = `select_alu_sra;
+      {`SPECIAL, `SLLV}:    ALUOp = `select_alu_sll;
+
+      {`SPECIAL, `LW}:
+      {`SPECIAL, `SW}:
+
+      {`BEQ, `dc6}:
+      {`BNE, `dc6}:
+      
 
       // compare rs data to 0, only care about 1 operand
       {`BGTZ, `dc6}:        ALUOp = `select_alu_passx;
@@ -222,7 +257,20 @@ module Decode(
   always @(op or immediate) begin
     casex(op)
       // DETERMINE WHAT THE IMMEDIATE VALUE SHOULD BE FOR RELEVANT INSTRUCTIONS
-      default : Imm = 32'b0;
+      `ADDI : 	   Imm = immediate;
+      `ADDIU :	   Imm = immediate;
+      `SLTI :      Imm = immediate;
+      `SLTIU :     Imm = immediate;
+      `ANDI :      Imm = immediate;
+      `ORI :	   Imm = immediate;
+      `XORI :  	   Imm = immediate;
+      `BEQ : 	   Imm = immediate;
+      `BNE : 	   Imm = immediate;
+      `BLEZ : 	   Imm = 32'b0;
+      `BGTZ : 	   Imm = 32'b0;
+      `BLTZ_GEZ :  Imm = 32'b0;
+      `LUI :       Imm = 32'b0;
+      default :    Imm = 32'b0;
     endcase
   end
   

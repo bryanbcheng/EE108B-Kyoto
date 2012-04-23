@@ -39,7 +39,15 @@ module IF (
 
   // MODIFY THE CODE BELOW SO THAT THE PROCESSOR HANDLES JUMPS AND BRANCHES CORRECTLY
   always @* begin
-    pc_next = pc + 3'h4;
+    if (JumpBranch == 1) begin
+      
+    end else if (JumpTarget == 1) begin
+      
+    end else if (JumpReg == 1) begin
+      pc_next = RsData;
+    end else begin
+      pc_next = pc + 3'h4;
+    end
   end
 
 //******************************************************************************
