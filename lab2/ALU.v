@@ -47,8 +47,42 @@ module ALU (
   `define select_alu_add 4'd13
   `define select_alu_sub 4'd14
   
+  wire signed [31:0] ALUOpXS, ALUOpYS;  
+  assign ALUOpXS = ALUOpX;
+  assign ALUOpYS = ALUOpY;
+
   always @* begin
     case (ALUOp)
+      `select_alu_addu: 
+	ALUResult = ALUOpX + ALUOpY;
+      'select_alu_and:
+	ALUResult = ALUOpX & ALUOpY;
+      'select_alu_xor:
+	ALUResult = (ALUOpX & ~ALUOpY) | (~ALUOpX & ALUOpY);
+      'select_alu_or:
+	ALUResult = ALUOpX | AlUOpY;
+      'select_alu_nor:
+	ALUResult = ~(ALUOpX | ALUOpY);
+      'select_alu_subu:
+	ALUResult = ALUOpX - ALUOpY; // CHECK ORDER OF OPERATIONS HERE
+      'select_alu_sltu:
+	ALUResult = (ALUOpX < ALUOpY);
+      'select_alu_slt:
+	ALUResult = (ALUOpXS < ALUOpYS);
+      'select_alu_srl:
+	ALUResult = (ALUOpX >> ALUOpY);
+      'select_alu_sra:
+	ALUResult = (ALUOpXS >>> ALUOpY);
+      'select_alu_sll:
+	ALUResult = (ALUOpX << ALUOpY);
+      'select_alu_passx:
+	ALUResult = ALUOpX;
+      'select_alu_passy:
+	ALUResult = ALUOpY;
+      'select_alu_add:
+	ALUResult = ALUOpXS + ALUOpYS;
+      'select_alu_sub:
+	ALUResult = ALUOpXS - ALUOpYS;
       // PERFORM ALU OPERATIONS DEFINED ABOVE
       default:
         ALUResult = 32'hxxxxxxxx;   // Undefined
