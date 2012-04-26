@@ -60,7 +60,7 @@ module ALU (
       `select_alu_xor:
 	ALUResult = (ALUOpX & ~ALUOpY) | (~ALUOpX & ALUOpY);
       `select_alu_or:
-	ALUResult = ALUOpX | AlUOpY;
+	ALUResult = ALUOpX | ALUOpY;
       `select_alu_nor:
 	ALUResult = ~(ALUOpX | ALUOpY);
       `select_alu_subu:
@@ -86,7 +86,7 @@ module ALU (
       // PERFORM ALU OPERATIONS DEFINED ABOVE
       default:
         ALUResult = 32'hxxxxxxxx;   // Undefined
-    end:case
+    endcase
   end
  
   assign ALUNeg = (ALUResult < 0) ? 1 : 0;

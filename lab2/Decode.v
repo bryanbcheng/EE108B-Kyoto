@@ -269,20 +269,9 @@ module Decode(
       `LUI :       Imm = 32'b0;
       default :    Imm = 32'b0;
     endcase
-    casex(op)
-      `ADDI :      ALUSrc = 1'b1;
-      `ADDIU :     ALUSrc = 1'b1;
-      `SLTI :      ALUSrc = 1'b1;
-      `SLTIU :     ALUSrc = 1'b1;
-      `ANDI :      ALUSrc = 1'b1;
-      `ORI :       ALUSrc = 1'b1;
-      `XORI :      ALUSrc = 1'b1;
-      `LW : 	   ALUSrc = 1'b1;
-      `SW :	   ALUSrc = 1'b1;
-      `LUI :       ALUSrc = 1'b1;
-      default :    ALUSrc = 1'b0;
-    endcase
   end
+
+  assign ALUSrc = |{op == `ADDI, `ADDIU, `SLTI, `SLTIU, `ANDI, `ORI, `XORI, `LW, `SW, `LUI} ? 1'b1 : 1'b0;
   
   // MAKE ASSIGNMENT TO ALUSrc SO IMMEDIATE VALUE IS USED FOR APPROPRIATE INSTRUCTIONS
 

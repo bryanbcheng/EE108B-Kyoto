@@ -38,7 +38,7 @@ module IF (
   dffar #(32) pc_ff (.clk(clk), .r(rst), .en(clken), .d(pc_next), .q(pc));
 
   wire [31:0] branch_offset;
-  `define jump_target 25:0;
+  `define jump_target 25:0
 
   assign branch_offset = {instr[15], 14'b0, instr[14:0], 2'b0};
 
@@ -48,7 +48,7 @@ module IF (
       // assume no overflow
       pc_next = pc + branch_offset;
     end else if (JumpTarget == 1) begin
-      pc_next = {pc[31:28], instr[`jump_target], 2'b0}
+      pc_next = {pc[31:28], instr[`jump_target], 2'b0};
     end else if (JumpReg == 1) begin
       pc_next = RsData;
     end else begin
