@@ -88,5 +88,8 @@ module ALU (
         ALUResult = 32'hxxxxxxxx;   // Undefined
     endcase
   end
+ 
+  assign ALUNeg = (ALUResult < 0) ? 1 : 0;
+  assign ALUZero = (ALUResult == 0) ? 1 : 0;
   
 endmodule
