@@ -224,12 +224,11 @@ module Decode(
       {`SPECIAL, `SRAV}:    ALUOp = `select_alu_sra;
       {`SPECIAL, `SLLV}:    ALUOp = `select_alu_sll;
 
-      {`SPECIAL, `LW}:
-      {`SPECIAL, `SW}:
+      {`SPECIAL, `LW}:	    ALUOp = `select_alu_
+      {`SPECIAL, `SW}:	    ALUOp = `select_alu_
 
-      {`BEQ, `dc6}:
-      {`BNE, `dc6}:
-      
+      {`BEQ, `dc6}:         ALUOp = `select_alu_
+      {`BNE, `dc6}:	    ALUOp = `select_alu_
 
       // compare rs data to 0, only care about 1 operand
       {`BGTZ, `dc6}:        ALUOp = `select_alu_passx;
@@ -264,13 +263,19 @@ module Decode(
       `ANDI :      Imm = immediate;
       `ORI :	   Imm = immediate;
       `XORI :  	   Imm = immediate;
-      `BEQ : 	   Imm = immediate;
-      `BNE : 	   Imm = immediate;
-      `BLEZ : 	   Imm = 32'b0;
-      `BGTZ : 	   Imm = 32'b0;
-      `BLTZ_GEZ :  Imm = 32'b0;
       `LUI :       Imm = 32'b0;
       default :    Imm = 32'b0;
+    endcase
+    casex(op)
+      `ADDI :      ALUSrc = 1'b1;
+      `ADDIU :     ALUSrc = 1'b1;
+      `SLTI :      ALUSrc = 1'b1;
+      `SLTIU :     ALUSrc = 1'b1;
+      `ANDI :      ALUSrc = 1'b1;
+      `ORI :       ALUSrc = 1'b1;
+      `XORI :      ALUSrc = 1'b1;
+      `LUI :       ALUSrc = 1'b1;
+      default :    ALUSrc = 1'b0;
     endcase
   end
   
