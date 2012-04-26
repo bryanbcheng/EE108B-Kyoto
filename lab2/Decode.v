@@ -224,11 +224,12 @@ module Decode(
       {`SPECIAL, `SRAV}:    ALUOp = `select_alu_sra;
       {`SPECIAL, `SLLV}:    ALUOp = `select_alu_sll;
 
-      {`SPECIAL, `LW}:	    ALUOp = `select_alu_
-      {`SPECIAL, `SW}:	    ALUOp = `select_alu_
+      // add offset to address
+      {`SPECIAL, `LW}:	    ALUOp = `select_alu_addu;
+      {`SPECIAL, `SW}:	    ALUOp = `select_alu_addu;
 
-      {`BEQ, `dc6}:         ALUOp = `select_alu_
-      {`BNE, `dc6}:	    ALUOp = `select_alu_
+      {`BEQ, `dc6}:         ALUOp = `select_alu_xor;
+      {`BNE, `dc6}:	    ALUOp = `select_alu_xor;
 
       // compare rs data to 0, only care about 1 operand
       {`BGTZ, `dc6}:        ALUOp = `select_alu_passx;
@@ -263,6 +264,8 @@ module Decode(
       `ANDI :      Imm = immediate;
       `ORI :	   Imm = immediate;
       `XORI :  	   Imm = immediate;
+      `LW : 	   Imm = immediate;
+      `SW :	   Imm = immediate;
       `LUI :       Imm = 32'b0;
       default :    Imm = 32'b0;
     endcase
@@ -274,6 +277,8 @@ module Decode(
       `ANDI :      ALUSrc = 1'b1;
       `ORI :       ALUSrc = 1'b1;
       `XORI :      ALUSrc = 1'b1;
+      `LW : 	   ALUSrc = 1'b1;
+      `SW :	   ALUSrc = 1'b1;
       `LUI :       ALUSrc = 1'b1;
       default :    ALUSrc = 1'b0;
     endcase
