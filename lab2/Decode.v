@@ -257,15 +257,15 @@ module Decode(
   always @(op or immediate) begin
     casex(op)
       // DETERMINE WHAT THE IMMEDIATE VALUE SHOULD BE FOR RELEVANT INSTRUCTIONS
-      `ADDI : 	   Imm = immediate;
-      `ADDIU :	   Imm = immediate;
-      `SLTI :      Imm = immediate;
-      `SLTIU :     Imm = immediate;
-      `ANDI :      Imm = immediate;
-      `ORI :	   Imm = immediate;
-      `XORI :  	   Imm = immediate;
-      `LW : 	   Imm = immediate;
-      `SW :	   Imm = immediate;
+      `ADDI : 	   Imm = {{17{immediate[15]}}, immediate[14:0]};
+      `ADDIU :	   Imm = {{17{immediate[15]}}, immediate[14:0]};
+      `SLTI :      Imm = {{17{immediate[15]}}, immediate[14:0]};
+      `SLTIU :     Imm = {{17{immediate[15]}}, immediate[14:0]};
+      `ANDI :      Imm = {{16{1'b0}}, immediate};
+      `ORI :	   Imm = {{16{1'b0}}, immediate};
+      `XORI :  	   Imm = {{16{1'b0}}, immediate};
+      `LW : 	   Imm = {{17{immediate[15]}}, immediate[14:0]};
+      `SW :	   Imm = {{17{immediate[15]}}, immediate[14:0]};
       `LUI :       Imm = 32'b0;
       default :    Imm = 32'b0;
     endcase
