@@ -172,32 +172,65 @@ module irom(clka, addra, douta);
   assign memory[ 30] = {`ORI, `T2, `T0, 16'd23};
   // ori $t0, $t2, 21 t0 = 23
   assign memory[ 31] = {`ORI, `T2, `T0, 16'd21};
-  assign memory[ 32] = {`NOP};
-  assign memory[ 33] = {`NOP};
-  assign memory[ 34] = {`NOP};
-  assign memory[ 35] = {`NOP};
-  assign memory[ 36] = {`NOP};
-  assign memory[ 37] = {`NOP};
-  assign memory[ 38] = {`NOP};
-  assign memory[ 39] = {`NOP};
-  assign memory[ 40] = {`NOP};
-  assign memory[ 41] = {`NOP};
-  assign memory[ 42] = {`NOP};
-  assign memory[ 43] = {`NOP};
-  assign memory[ 44] = {`NOP};
-  assign memory[ 45] = {`NOP};
-  assign memory[ 46] = {`NOP};
-  assign memory[ 47] = {`NOP};
-  assign memory[ 48] = {`NOP};
-  assign memory[ 49] = {`NOP};
-  assign memory[ 50] = {`NOP};
-  assign memory[ 51] = {`NOP};
-  assign memory[ 52] = {`NOP};
-  assign memory[ 53] = {`NOP};
-  assign memory[ 54] = {`NOP};
-  assign memory[ 55] = {`NOP};
-  assign memory[ 56] = {`NOP};
-  assign memory[ 57] = {`NOP};
+
+  // xor $t0, $t2, $t3 t0 = -2
+  assign memory[ 32] = {`SPECIAL, `T2, `T3, `T0, `NULL, `XOR};
+  // xor $t0, $t3, $zero t0 = t3 = -3
+  assign memory[ 33] = {`SPECIAL, `T3, `ZERO, `T0, `NULL, `XOR};
+  // xori $t0, $zero, 1023 t0 = 1023
+  assign memory[ 34] = {`XORI, `ZERO, `T0, 16'd1023};
+  // xori $t0, $t2, 23 t0 = 20
+  assign memory[ 35] = {`XORI, `T2, `T0, 16'd23};
+  // xori $t0, $t2, 21 t0 = 22
+  assign memory[ 36] = {`XORI, `T2, `T0, 16'd21};
+
+  // nor $t0, $t2, $t3 t0 = 0
+  assign memory[ 37] = {`SPECIAL, `T2, `T3, `T0, `NULL, `NOR};
+  // nor $t0, $t3, $zero t0 = 2
+  assign memory[ 38] = {`SPECIAL, `T3, `ZERO, `T0, `NULL, `NOR};
+  
+  // srl $t0, $t2, 2
+  assign memory[ 39] = {`SPECIAL, `NULL, `T2, `T0, 5'd2, `SRL};
+  // srl $t0, $t2, -2
+  assign memory[ 40] = {`SPECIAL, `NULL, `T2, `T0, -5'd2, `SRL};
+  // srl $t0, $t3, 2
+  assign memory[ 41] = {`SPECIAL, `NULL, `T3, `T0, 5'd2, `SRL};
+  // srl $t0, $t3, -2
+  assign memory[ 42] = {`SPECIAL, `NULL, `T3, `T0, -5'd2, `SRL};
+
+  // sra $t0, $t2, 2
+  assign memory[ 43] = {`SPECIAL, `NULL, `T2, `T0, 5'd2, `SRA};
+  // sra $t0, $t2, -2
+  assign memory[ 44] = {`SPECIAL, `NULL, `T2, `T0, -5'd2, `SRA};
+  // sra $t0, $t3, 2
+  assign memory[ 45] = {`SPECIAL, `NULL, `T3, `T0, 5'd2, `SRA};
+  // sra $t0, $t3, -2
+  assign memory[ 46] = {`SPECIAL, `NULL, `T3, `T0, -5'd2, `SRA};
+
+  // sll $t0, $t2, 2
+  assign memory[ 47] = {`SPECIAL, `NULL, `T2, `T0, 5'd2, `SLL};
+  // sll $t0, $t2, -2
+  assign memory[ 48] = {`SPECIAL, `NULL, `T2, `T0, -5'd2, `SLL};
+  // sll $t0, $t3, 2
+  assign memory[ 49] = {`SPECIAL, `NULL, `T3, `T0, 5'd2, `SLL};
+  // sll $t0, $t3, -2
+  assign memory[ 50] = {`SPECIAL, `NULL, `T3, `T0, -5'd2, `SLL};
+
+  // addi $t4, $zero, 1
+  assign memory[ 51] = {`ADDI, `ZERO, `T4, 16'd1};
+  // srlv $t0, $t2, $t4
+  assign memory[ 52] = {`SPECIAL, `T4, `T2, `T0, `NULL, `SRLV};
+  // srlv $t0, $t3, $t4
+  assign memory[ 53] = {`SPECIAL, `T4, `T3, `T0, `NULL, `SRLV};
+  // srav $t0, $t2, $t4
+  assign memory[ 54] = {`SPECIAL, `T4, `T2, `T0, `NULL, `SRAV};
+  // srav $t0, $t3, $t4
+  assign memory[ 55] = {`SPECIAL, `T4, `T3, `T0, `NULL, `SRAV};
+  // sllv $t0, $t2, $t4
+  assign memory[ 56] = {`SPECIAL, `T4, `T2, `T0, `NULL, `SLLV};
+  // sllv $t0, $t3, $t4
+  assign memory[ 57] = {`SPECIAL, `T4, `T3, `T0, `NULL, `SLLV};
+  
   assign memory[ 58] = {`NOP};
   assign memory[ 59] = {`NOP};
   assign memory[ 60] = {`NOP};
