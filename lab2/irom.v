@@ -189,46 +189,46 @@ module irom(clka, addra, douta);
   // nor $t0, $t3, $zero t0 = 2
   assign memory[ 38] = {`SPECIAL, `T3, `ZERO, `T0, `NULL, `NOR};
   
-  // srl $t0, $t2, 2
+  // srl $t0, $t2, 2 t0 = 0
   assign memory[ 39] = {`SPECIAL, `NULL, `T2, `T0, 5'd2, `SRL};
-  // srl $t0, $t2, -2
+  // srl $t0, $t2, -2 t0 = 0
   assign memory[ 40] = {`SPECIAL, `NULL, `T2, `T0, -5'd2, `SRL};
-  // srl $t0, $t3, 2
+  // srl $t0, $t3, 2 t0 = t0 = 1073741823
   assign memory[ 41] = {`SPECIAL, `NULL, `T3, `T0, 5'd2, `SRL};
-  // srl $t0, $t3, -2
+  // srl $t0, $t3, -2 t0 = 3
   assign memory[ 42] = {`SPECIAL, `NULL, `T3, `T0, -5'd2, `SRL};
 
-  // sra $t0, $t2, 2
+  // sra $t0, $t2, 2 t0 = 0
   assign memory[ 43] = {`SPECIAL, `NULL, `T2, `T0, 5'd2, `SRA};
-  // sra $t0, $t2, -2
+  // sra $t0, $t2, -2 t0 = 0
   assign memory[ 44] = {`SPECIAL, `NULL, `T2, `T0, -5'd2, `SRA};
-  // sra $t0, $t3, 2
+  // sra $t0, $t3, 2 t0 = -1
   assign memory[ 45] = {`SPECIAL, `NULL, `T3, `T0, 5'd2, `SRA};
-  // sra $t0, $t3, -2
+  // sra $t0, $t3, -2 t0 = -1
   assign memory[ 46] = {`SPECIAL, `NULL, `T3, `T0, -5'd2, `SRA};
 
-  // sll $t0, $t2, 2
+  // sll $t0, $t2, 2 t0 = 12
   assign memory[ 47] = {`SPECIAL, `NULL, `T2, `T0, 5'd2, `SLL};
-  // sll $t0, $t2, -2
+  // sll $t0, $t2, -2 t0 = 3489660927 / -1073741824
   assign memory[ 48] = {`SPECIAL, `NULL, `T2, `T0, -5'd2, `SLL};
-  // sll $t0, $t3, 2
+  // sll $t0, $t3, 2 t0 = -12
   assign memory[ 49] = {`SPECIAL, `NULL, `T3, `T0, 5'd2, `SLL};
-  // sll $t0, $t3, -2
+  // sll $t0, $t3, -2 t0 = 10737411824
   assign memory[ 50] = {`SPECIAL, `NULL, `T3, `T0, -5'd2, `SLL};
 
-  // addi $t4, $zero, 1
+  // addi $t4, $zero, 1 t4 = 0
   assign memory[ 51] = {`ADDI, `ZERO, `T4, 16'd1};
-  // srlv $t0, $t2, $t4
+  // srlv $t0, $t2, $t4 t0 = 1
   assign memory[ 52] = {`SPECIAL, `T4, `T2, `T0, `NULL, `SRLV};
-  // srlv $t0, $t3, $t4
+  // srlv $t0, $t3, $t4 t0 = 214783646
   assign memory[ 53] = {`SPECIAL, `T4, `T3, `T0, `NULL, `SRLV};
-  // srav $t0, $t2, $t4
+  // srav $t0, $t2, $t4 t0 = 1
   assign memory[ 54] = {`SPECIAL, `T4, `T2, `T0, `NULL, `SRAV};
-  // srav $t0, $t3, $t4
+  // srav $t0, $t3, $t4 t0 = -2
   assign memory[ 55] = {`SPECIAL, `T4, `T3, `T0, `NULL, `SRAV};
-  // sllv $t0, $t2, $t4
+  // sllv $t0, $t2, $t4 t0 = 6
   assign memory[ 56] = {`SPECIAL, `T4, `T2, `T0, `NULL, `SLLV};
-  // sllv $t0, $t3, $t4
+  // sllv $t0, $t3, $t4 t0 = -6
   assign memory[ 57] = {`SPECIAL, `T4, `T3, `T0, `NULL, `SLLV};
   
   assign memory[ 58] = {`NOP};
