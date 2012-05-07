@@ -267,20 +267,20 @@ module irom(clka, addra, douta);
   assign memory[ 91] = {`NOP};
   assign memory[ 92] = {`NOP};
   assign memory[ 93] = {`NOP};
-  //beq $t2, $t2, offset
-  assign memory[ 94] = {`BEQ, 'T2, 'T2, -16d'2};
-  //bne $t3, $t2, offset
-  assign memory[ 95] = {`BNE, 'T2, 'T3, -16d'2};
-  //bltz $t3, offset
-  assign memory[ 96] = {`BLTZ, 'NULL, 'T3, -16d'2};
-  //blez $t3, offset
-  assign memory[ 97] = {`BLEZ, 'NULL, 'T3, -16d'2};
-  //bgtz $t2, offset
-  assign memory[ 98] = {`BGTZ, `NULL, `T2, -16d'2};
-  //bgez $t2, offset
-  assign memory[ 99] = {`BGEZ, `NULL, `T2, -16d'2};
-  //lui $t0, 50
-  assign memory[100] = {`LUI, `NULL, `T0, 16d'50};
+  // beq $t2, $t2, offset
+  assign memory[ 94] = {`BEQ, `T2, `T2, -16'd2};
+  // bne $t3, $t2, offset
+  assign memory[ 95] = {`BNE, `T2, `T3, -16'd2};
+  // bltz $t3, offset
+  assign memory[ 96] = {`BLTZ, `NULL, `T3, -16'd2};
+  // blez $t3, offset
+  assign memory[ 97] = {`BLEZ, `NULL, `T3, -16'd2};
+  // bgtz $t2, offset
+  assign memory[ 98] = {`BGTZ, `NULL, `T2, -16'd2};
+  // bgez $t2, offset
+  assign memory[ 99] = {`BGEZ, `NULL, `T2, -16'd2};
+  // lui $t0, 50
+  assign memory[100] = {`LUI, `NULL, `T0, 16'd50};
   assign memory[101] = {`NOP};
   assign memory[102] = {`NOP};
   assign memory[103] = {`NOP};
