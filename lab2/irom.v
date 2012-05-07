@@ -108,37 +108,66 @@ module irom(clka, addra, douta);
   // add $t0, $t1, $t2
   assign memory[  1] = {`SPECIAL, `T1, `T2, `T0, `NULL, `ADD};
 
-  // put tests here (and replace the examples if you wish)
-  assign memory[  2] = {`NOP};
-  assign memory[  3] = {`NOP};
-  assign memory[  4] = {`NOP};
-  assign memory[  5] = {`NOP};
-  assign memory[  6] = {`NOP};
-  assign memory[  7] = {`NOP};
-  assign memory[  8] = {`NOP};
-  assign memory[  9] = {`NOP};
-  assign memory[ 10] = {`NOP};
-  assign memory[ 11] = {`NOP};
-  assign memory[ 12] = {`NOP};
-  assign memory[ 13] = {`NOP};
-  assign memory[ 14] = {`NOP};
-  assign memory[ 15] = {`NOP};
-  assign memory[ 16] = {`NOP};
-  assign memory[ 17] = {`NOP};
-  assign memory[ 18] = {`NOP};
-  assign memory[ 19] = {`NOP};
-  assign memory[ 20] = {`NOP};
-  assign memory[ 21] = {`NOP};
-  assign memory[ 22] = {`NOP};
-  assign memory[ 23] = {`NOP};
-  assign memory[ 24] = {`NOP};
-  assign memory[ 25] = {`NOP};
-  assign memory[ 26] = {`NOP};
-  assign memory[ 27] = {`NOP};
-  assign memory[ 28] = {`NOP};
-  assign memory[ 29] = {`NOP};
-  assign memory[ 30] = {`NOP};
-  assign memory[ 31] = {`NOP};
+  // add $t1, $t0, $t0
+  assign memory[  2] = {`SPECIAL, `T1, `T0, `T0, `NULL, `ADD};
+  // addu $t2, $t0, $t1
+  assign memory[  3] = {`SPECIAL, `T2, `T0, `T1, `NULL, `ADDU};
+  // addi $t0, $t0, 9999
+  assign memory[  4] = {`ADDI, `T0, `T0, 16'd9999};
+  // addi $t1, $t0, -10001
+  assign memory[  5] = {`ADDI, `T1, `T0, -16'd10001};
+  // addiu $t0, $t0, 2
+  assign memory[  6] = {`ADDIU, `T0, `T0, 16'd2};
+  // addiu $t1, $t1, 2
+  assign memory[  7] = {`ADDIU, `T0, `T0, 16'd2};
+  // sub $t0, $t0, $t2
+  assign memory[  8] = {`SPECIAL, `T0, `T0, `T2, `NULL, `SUB};
+  // sub $t3, $zero, $t2
+  assign memory[  9] = {`SPECIAL, `T3, `ZERO, `T2, `NULL, `SUB};
+  // sub $t0, $t0, $t3
+  assign memory[ 10] = {`SPECIAL, `T0, `T0, `T3, `NULL, `SUB};
+  // subu $t0, $t0, $t2
+  assign memory[ 11] = {`SPECIAL, `T0, `T0, `T2, `NULL, `SUBU};
+  // slt $t0, $t2, $t3
+  assign memory[ 12] = {`SPECIAL, `T0, `T2, `T3, `NULL, `SLT};
+  // slt $t0, $t3, $t2
+  assign memory[ 13] = {`SPECIAL, `T0, `T3, `T2, `NULL, `SLT};
+  // slt $t0, $zero, $zero
+  assign memory[ 14] = {`SPECIAL, `T0, `ZERO, `ZERO, `NULL, `SLT};
+  // sltu $t0, $t2, $t3
+  assign memory[ 15] = {`SPECIAL, `T0, `T2, `T3, `NULL, `SLTU};
+  // sltu $t0, $t3, $t2
+  assign memory[ 16] = {`SPECIAL, `T0, `T3, `T2, `NULL, `SLTU};
+  // slti $t0, $t2, 0
+  assign memory[ 17] = {`SLTI, `T0, `T2, 16'd0};
+  // slti $t0, $t3, 0
+  assign memory[ 18] = {`SLTI, `T0, `T3, 16'd0};
+  // slti $t0, $zero, 0
+  assign memory[ 19] = {`SLTI, `T0, `ZERO, 16'd0};
+  // sltiu $t0, $t2, 0 
+  assign memory[ 20] = {`SLTIU, `T0, `T2, 16'd0};
+  // sltiu $t0, $t3, 0
+  assign memory[ 21] = {`SLTIU, `T0, `T3, 16'd0};
+  // and $t0, $t2, $t3
+  assign memory[ 22] = {`SPECIAL, `T0, `T2, `T3, `NULL, `AND};
+  // and $t0, $t3, $zero
+  assign memory[ 23] = {`SPECIAL, `T0, `T3, `ZERO, `NULL, `AND};
+  // andi $t0, $zero, 1023
+  assign memory[ 24] = {`ADDI, `T0, `ZERO, 16'd1023};
+  // andi $t0, $t2, 23
+  assign memory[ 25] = {`ADDI, `T0, `T2, 16'd23};
+  // andi $t0, $t2, 21
+  assign memory[ 26] = {`ADDI, `T0, `T2, 16'd21};
+  // or $t0, $t2, $t3
+  assign memory[ 27] = {`SPECIAL, `T0, `T2, `T3, `NULL, `AND};
+  // or $t0, $t3, $zero
+  assign memory[ 28] = {`SPECIAL, `T0, `T3, `ZERO, `NULL, `AND};
+  // ori $t0, $zero, 1023
+  assign memory[ 29] = {`ORI, `T0, `ZERO, 16'd1023};
+  // ori $t0, $t2, 23
+  assign memory[ 30] = {`ORI, `T0, `T2, 16'd23};
+  // ori $t0, $t2, 21
+  assign memory[ 31] = {`ORI, `T0, `T2, 16'd21};
   assign memory[ 32] = {`NOP};
   assign memory[ 33] = {`NOP};
   assign memory[ 34] = {`NOP};

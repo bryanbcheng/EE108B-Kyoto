@@ -271,7 +271,7 @@ module Decode(
     endcase
   end
 
-  assign ALUSrc = |{op == `ADDI, `ADDIU, `SLTI, `SLTIU, `ANDI, `ORI, `XORI, `LW, `SW, `LUI} ? 1'b1 : 1'b0;
+  assign ALUSrc = |{op == `ADDI, op == `ADDIU, op == `SLTI, op == `SLTIU, op == `ANDI, op == `ORI, op == `XORI, op == `LW, op == `SW, op == `LUI};
   
   // MAKE ASSIGNMENT TO ALUSrc SO IMMEDIATE VALUE IS USED FOR APPROPRIATE INSTRUCTIONS
 
