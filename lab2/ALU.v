@@ -70,11 +70,11 @@ module ALU (
       `select_alu_slt:
 	ALUResult = (ALUOpXS < ALUOpYS);
       `select_alu_srl:
-	ALUResult = (ALUOpX >> ALUOpY);
+	ALUResult = (ALUOpY >> ALUOpX);
       `select_alu_sra:
-	ALUResult = (ALUOpXS >>> ALUOpY);
+	ALUResult = (ALUOpYS >>> ALUOpX);
       `select_alu_sll:
-	ALUResult = (ALUOpX << ALUOpY);
+	ALUResult = (ALUOpY << ALUOpX);
       `select_alu_passx:
 	ALUResult = ALUOpX;
       `select_alu_passy:
