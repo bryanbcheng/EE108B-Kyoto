@@ -240,7 +240,7 @@ module irom(clka, addra, douta);
   assign memory[ 61] = {`BNE, `T2, `T3, 16'd1};
   assign memory[ 62] = {`ADDI, `T0, `T0, 16'd500};
   // bltz $t3, 1 branch to 65
-  assign memory[ 63] = {`BLTZ, `T3, `NULL, 16'd1};
+  assign memory[ 63] = {`BLTZ_GEZ, `T3, `BLTZ, 16'd1};
   assign memory[ 64] = {`ADDI, `T0, `T0, 16'd600};
   // blez $t3, 1 branch to 67
   assign memory[ 65] = {`BLEZ, `T3, `NULL, 16'd1};
@@ -249,7 +249,7 @@ module irom(clka, addra, douta);
   assign memory[ 67] = {`BGTZ, `T2, `NULL, 16'd1};
   assign memory[ 68] = {`ADDI, `T0, `T0, 16'd800};
   // bgez $t2, 1 branch to 70
-  assign memory[ 69] = {`BGEZ, `T2, `NULL, 16'd0};
+  assign memory[ 69] = {`BLTZ_GEZ, `T2, `BGEZ, 16'd0};
   assign memory[ 70] = {`ADDI, `T0, `T0, 16'd1000};
   assign memory[ 71] = {`LUI, `NULL, `T0, 16'd50};
   
