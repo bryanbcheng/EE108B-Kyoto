@@ -255,7 +255,7 @@ module irom(clka, addra, douta);
   
   // load and save word
   // sw $t1, 0(gp)
-  assign memory[ 72] = {`ADDI, `ZERO, `T1, 16'd1337};
+  assign memory[ 72] = {`ADDI, `T1, `ZERO, 16'd1337};
   assign memory[ 73] = {`SW, `GP, `T1, 16'd0};
   // lw $t0, 0(gp)
   assign memory[ 74] = {`LW, `GP, `T0, 16'd0};

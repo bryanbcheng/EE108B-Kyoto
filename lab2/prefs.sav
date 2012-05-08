@@ -1,0 +1,21 @@
+[timestart] 8894
+[size] 1000 600
+[pos] 781 -30
+*-9.571659 10020 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
+[treeopen] MIPStest.
+@25
+MIPStest.mips.pc[31:0]
+@28
+MIPStest.mips.instr[31:0]
+@24
+MIPStest.mips.JumpBranch[0]
+@28
+MIPStest.mips.ALUNeg[0]
+MIPStest.mips.ALUZero[0]
+@22
+MIPStest.mips.ALUOpX[31:0]
+MIPStest.mips.ALUOpY[31:0]
+MIPStest.mips.ALUOp[3:0]
+MIPStest.mips.ALUResult[31:0]
+[pattern_trace] 1
+[pattern_trace] 0
