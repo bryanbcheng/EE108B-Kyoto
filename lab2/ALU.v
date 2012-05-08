@@ -89,7 +89,7 @@ module ALU (
     endcase
   end
  
-  assign ALUNeg = (ALUResult < 0) ? 1 : 0;
+  assign ALUNeg = ALUResult[31];
   assign ALUZero = (ALUResult == 0) ? 1 : 0;
   
 endmodule
