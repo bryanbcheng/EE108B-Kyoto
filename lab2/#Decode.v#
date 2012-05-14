@@ -267,7 +267,7 @@ module Decode(
       `LW : 	   Imm = {{17{immediate[15]}}, immediate[14:0]};
       `SW :	   Imm = {{17{immediate[15]}}, immediate[14:0]};
       `LUI :       Imm = 32'b0;
-      default :    Imm = {immediate[15:0], 16'd0};
+      default :    Imm = {immediate[15:0], 16'b0};
     endcase
   end
 
