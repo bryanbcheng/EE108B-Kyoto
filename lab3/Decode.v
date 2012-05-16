@@ -22,7 +22,10 @@ module Decode(
   RegWriteEn, RegWriteAddr, MemWriteData,
   
   // Inputs
-  instr, RsDataIn, RtDataIn, pc // ,
+  instr, RsDataIn, RtDataIn, pc, 
+
+  // Forwarding
+  RegWriteAddr_ex, RegWriteAddr_mem, RegWriteEn_ex, RegWriteEn_mem, RegWriteData_ex, RegWriteData_mem // ,
 
   // PUT EXTRA INPUTS TO ENABLE FORWARDING AND STALLING HERE (don't forget to uncomment the comma above)
   // the MIPS module should have all the signals you need already
@@ -54,6 +57,14 @@ module Decode(
   // ALU control and data
   output [3:0] ALUOp;			// ALU operation select
   output [31:0] ALUOpX, ALUOpY;	// ALU operands
+
+  // forwarding
+  input [4:0] RegWriteAddr_ex;
+  input [4:0] RegWriteAddr_mem;
+  input RegWriteEn_ex;
+  input RegWriteEn_mem;
+  input [31:0] RegWriteData_ex;
+  input [31:0] RegWriteData_mem;
 
 //******************************************************************************
 // instruction field
@@ -269,9 +280,25 @@ module Decode(
   reg [31:0] RsData, RtData;
 
   always @* begin
+    if (RegWriteEn_ex && RegWriteAddr_ex != 5'b0 && RegWriteAddr_ex == RsAddr) begin
+      RsData = RegWriteData_ex;
+    end else if (RegWriteEn_mem && RegWriteAddr_mem != 5'b0 && RegWriteAddr_mem == RsAddr) begin
+      RsData = RegWriteData_mem;
+    end else
+      RsData = RsDataIn;
+    end
+
+    if (RegWriteEn_ex && RegWriteAddr_ex != 5'b0 && RegWriteAddr_ex == RtAddr) begin
+      RtData = RegWriteData_ex;
+    end	else if	(RegWriteEn_mem && RegWriteAddr_mem != 5'b0 && RegWriteAddr_mem == RtAddr) begin
+      RtData = RegWriteData_mem;
+    end else
+      RtData = RtDataIn;
+    end
+    
     // set RsData and RtData here according to forwarding rules
-    RsData = RsDataIn; // this assumes no forwarding
-    RtData = RtDataIn;
+//    RsData = RsDataIn; // this assumes no forwarding
+//    RtData = RtDataIn;
   end
 
   // assign the Stall signal according to the rules you determine

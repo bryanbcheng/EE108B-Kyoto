@@ -123,7 +123,15 @@ module MIPS (
     .instr(instr_id),
     .pc(pc_id),
     .RsDataIn(RsData_id),
-    .RtDataIn(RtData_id)
+    .RtDataIn(RtData_id),
+
+    // Forwarding
+    .RegWriteAddr_ex(RegWriteAddr_ex),
+    .RegWriteAddr_mem(RegWriteAddr_mem),
+    .RegWriteEn_ex(RegWriteEn_ex),
+    .RegWriteEn_mem(RegWriteEn_mem),
+    .RegWriteData_ex(ALUResult_ex),
+    .RegWriteData_mem(RegWriteData_mem)
   );
   
   `define rs 25:21	// 5-bit source register specifier
