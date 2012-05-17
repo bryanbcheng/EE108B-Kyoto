@@ -286,7 +286,7 @@ module Decode(
       RsData = RegWriteData_ex;
     end else if (RegWriteEn_mem && RegWriteAddr_mem != 5'b0 && RegWriteAddr_mem == RsAddr) begin
       RsData = RegWriteData_mem;
-    end else
+    end else begin
       RsData = RsDataIn;
     end
 
@@ -294,7 +294,7 @@ module Decode(
       RtData = RegWriteData_ex;
     end	else if	(RegWriteEn_mem && RegWriteAddr_mem != 5'b0 && RegWriteAddr_mem == RtAddr) begin
       RtData = RegWriteData_mem;
-    end else
+    end else begin
       RtData = RtDataIn;
     end
     
