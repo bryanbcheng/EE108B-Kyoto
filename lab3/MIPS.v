@@ -131,7 +131,10 @@ module MIPS (
     .RegWriteEn_ex(RegWriteEn_ex),
     .RegWriteEn_mem(RegWriteEn_mem),
     .RegWriteData_ex(ALUResult_ex),
-    .RegWriteData_mem(RegWriteData_mem)
+    .RegWriteData_mem(RegWriteData_mem),
+
+    // Stalling
+    .MemToReg_ex(MemTo_Reg_ex)    
   );
   
   `define rs 25:21	// 5-bit source register specifier

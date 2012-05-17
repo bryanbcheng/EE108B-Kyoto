@@ -25,11 +25,10 @@ module Decode(
   instr, RsDataIn, RtDataIn, pc, 
 
   // Forwarding
-  RegWriteAddr_ex, RegWriteAddr_mem, RegWriteEn_ex, RegWriteEn_mem, RegWriteData_ex, RegWriteData_mem // ,
+  RegWriteAddr_ex, RegWriteAddr_mem, RegWriteEn_ex, RegWriteEn_mem, RegWriteData_ex, RegWriteData_mem,
 
-  // PUT EXTRA INPUTS TO ENABLE FORWARDING AND STALLING HERE (don't forget to uncomment the comma above)
-  // the MIPS module should have all the signals you need already
-  // the only change you should need to make to MIPS.v is to connect those signals to this module's instantiation
+  // Stalling
+  MemToReg_ex // ,
 );
 
   // current instruction data
@@ -65,6 +64,9 @@ module Decode(
   input RegWriteEn_mem;
   input [31:0] RegWriteData_ex;
   input [31:0] RegWriteData_mem;
+
+  // stalling
+  input MemToReg_ex;
 
 //******************************************************************************
 // instruction field
@@ -303,8 +305,9 @@ module Decode(
 
   // assign the Stall signal according to the rules you determine
   // you should avoid stalling when it is not necessary (this is nontrivial)
-  assign Stall = 1'b0; // this assumes no stalling
+  //assign Stall = 1'b0; // this assumes no stalling
 
+  assign Stall = MemToReg_ex && (RegWriteAddr_ex == RsAddr || RegWriteAddr_ex == RtAddr);
 
   assign MemWriteData = RtData; // we may write forwarded data to memory
 
