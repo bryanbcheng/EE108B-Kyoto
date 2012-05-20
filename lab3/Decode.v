@@ -28,7 +28,7 @@ module Decode(
   RegWriteAddr_ex, RegWriteAddr_mem, RegWriteEn_ex, RegWriteEn_mem, RegWriteData_ex, RegWriteData_mem,
 
   // Stalling
-  MemToReg_ex // ,
+  MemToReg_ex, instr_if
 );
 
   // current instruction data
@@ -67,6 +67,7 @@ module Decode(
 
   // stalling
   input MemToReg_ex;
+  input [31:0] instr_if;
 
 //******************************************************************************
 // instruction field
@@ -308,6 +309,9 @@ module Decode(
   assign Stall = 1'b0; // this assumes no stalling
 
   //assign Stall = MemToReg_ex && (RegWriteAddr_ex == RsAddr || RegWriteAddr_ex == RtAddr);
+  wire [4:0] RsAddr_if = instr_if[`rs];
+  wire [4:0] RtAddr_if = instr_if[`rt];
+  //assign Stall = MemToReg && (RtAddr == RsAddr_if || RtAddr == RtAddr_if);
 
   assign MemWriteData = RtData; // we may write forwarded data to memory
 
