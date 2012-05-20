@@ -222,7 +222,7 @@ module irom(clka, addra, douta);
   // lw $t1, 0($t2)
   assign memory[ 80] = {`LW, `T2, `T1, 16'd0};
   assign memory[ 81] = {`NOP};
-  // bne $t0, $t1, branch to 67
+  // bne $t0, $t1, branch to 82
   assign memory[ 82] = {`BNE, `T0, `T1, -16'd1};
   assign memory[ 83] = {`NOP};
   assign memory[ 84] = {`NOP};
@@ -291,7 +291,7 @@ module irom(clka, addra, douta);
   // load followed by dependent branch
   // lw $t0, 0($t2)
   assign memory[130] = {`LW, `T2, `T0, 16'd0};
-  // beq $t0, $t2, branch to 101, same value before load
+  // beq $t0, $t2, branch to 131, same value before load
   assign memory[131] = {`BEQ, `T2, `T0, -16'd1};
   assign memory[132] = {`NOP};
   assign memory[133] = {`NOP};
