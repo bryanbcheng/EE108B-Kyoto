@@ -103,91 +103,137 @@ module irom(clka, addra, douta);
 
   // two examples:
 
-  // ori $t0, $zero, 1
+  // ori $t0, $zero, 20
   assign memory[  0] = {`ORI, `ZERO, `T0, 16'd20};
-  // add $t1, $t0, $t0
-  assign memory[  1] = {`SPECIAL, `T0, `T0, `T1, `NULL, `ADD};
-
-  // put tests here (and replace the examples if you wish)
+  assign memory[  1] = {`NOP};
   assign memory[  2] = {`NOP};
   assign memory[  3] = {`NOP};
   assign memory[  4] = {`NOP};
-  assign memory[  5] = {`NOP};
+
+  // add $t1, $t0, $t0
+  assign memory[  5] = {`SPECIAL, `T0, `T0, `T1, `NULL, `ADD};
   assign memory[  6] = {`NOP};
   assign memory[  7] = {`NOP};
   assign memory[  8] = {`NOP};
   assign memory[  9] = {`NOP};
-  assign memory[ 10] = {`NOP};
+
+  // sw $t0, 0($t1)
+  assign memory[ 10] = {`SW, `T1, `T0, 16'd0};
   assign memory[ 11] = {`NOP};
   assign memory[ 12] = {`NOP};
   assign memory[ 13] = {`NOP};
   assign memory[ 14] = {`NOP};
-  assign memory[ 15] = {`NOP};
+
+  // lw	$t2, 20($t0)
+  assign memory[ 15] = {`LW, `T0, `T2, 16'd20};
   assign memory[ 16] = {`NOP};
   assign memory[ 17] = {`NOP};
   assign memory[ 18] = {`NOP};
   assign memory[ 19] = {`NOP};
-  assign memory[ 20] = {`NOP};
-  assign memory[ 21] = {`NOP};
+
+  // beq $t0, $t2, branch to 26
+  assign memory[ 20] = {`BEQ, `T2, `T0, 16'd5};
+  // should have no effect
+  assign memory[ 21] = {`ADDI, `ZERO, `T1, 16'd5};
   assign memory[ 22] = {`NOP};
   assign memory[ 23] = {`NOP};
   assign memory[ 24] = {`NOP};
-  assign memory[ 25] = {`NOP};
+  // infinite loop
+  assign memory[ 25] = {`BEQ, `ZERO, `ZERO, -16'd1};
   assign memory[ 26] = {`NOP};
   assign memory[ 27] = {`NOP};
   assign memory[ 28] = {`NOP};
   assign memory[ 29] = {`NOP};
-  assign memory[ 30] = {`NOP};
-  assign memory[ 31] = {`NOP};
+
+  // j 36
+  assign memory[ 30] = {`J, 26'd36};
+  // should have no effect
+  assign memory[ 31] = {`ADDI, `ZERO, `T1, 16'd5};
   assign memory[ 32] = {`NOP};
   assign memory[ 33] = {`NOP};
   assign memory[ 34] = {`NOP};
-  assign memory[ 35] = {`NOP};
+  // infinite loop
+  assign memory[ 35] = {`BEQ, `ZERO, `ZERO, -16'd1};
   assign memory[ 36] = {`NOP};
   assign memory[ 37] = {`NOP};
   assign memory[ 38] = {`NOP};
   assign memory[ 39] = {`NOP};
-  assign memory[ 40] = {`NOP};
-  assign memory[ 41] = {`NOP};
-  assign memory[ 42] = {`NOP};
-  assign memory[ 43] = {`NOP};
-  assign memory[ 44] = {`NOP};
+
+  // addi $t3, $zero, 1
+  assign memory[ 40] = {`ADDI, `ZERO, `T3, 16'd1};
+  // add $t3, $t3, $t3
+  assign memory[ 41] = {`SPECIAL, `T3, `T3, `T3, `NULL, `ADD};
+  // add $t3, $t3, $t3
+  assign memory[ 42] = {`SPECIAL, `T3, `T3, `T3, `NULL, `ADD};
+  // add $t3, $t3, $t3
+  assign memory[ 43] = {`SPECIAL, `T3, `T3, `T3, `NULL, `ADD};
+  // add $t3, $t3, $t3
+  assign memory[ 44] = {`SPECIAL, `T3, `T3, `T3, `NULL, `ADD};
+
   assign memory[ 45] = {`NOP};
   assign memory[ 46] = {`NOP};
   assign memory[ 47] = {`NOP};
   assign memory[ 48] = {`NOP};
   assign memory[ 49] = {`NOP};
+
+  // X to D
+  // addi $t2, $zero, 16
   assign memory[ 50] = {`NOP};
+  // bne $t2, $t3, branch to 51
   assign memory[ 51] = {`NOP};
   assign memory[ 52] = {`NOP};
   assign memory[ 53] = {`NOP};
   assign memory[ 54] = {`NOP};
+
+  // X to X
+  // and $t1, $zero, $t1
   assign memory[ 55] = {`NOP};
+  // add $t0, $t1, $t1
   assign memory[ 56] = {`NOP};
   assign memory[ 57] = {`NOP};
   assign memory[ 58] = {`NOP};
   assign memory[ 59] = {`NOP};
+
+  // X to M
+  // addi $t2, $zero, 160
   assign memory[ 60] = {`NOP};
+  // lw $t0, 0($t2)
   assign memory[ 61] = {`NOP};
   assign memory[ 62] = {`NOP};
   assign memory[ 63] = {`NOP};
   assign memory[ 64] = {`NOP};
+
+  // M to D
+  // lw $t1, 0($t2)
   assign memory[ 65] = {`NOP};
   assign memory[ 66] = {`NOP};
+  // bne $t0, $t1, branch to 67
   assign memory[ 67] = {`NOP};
   assign memory[ 68] = {`NOP};
   assign memory[ 69] = {`NOP};
+
+  // M to X
+  // lw $t3, 0($t2)
   assign memory[ 70] = {`NOP};
   assign memory[ 71] = {`NOP};
+  // add $t0, $t3, $t3
   assign memory[ 72] = {`NOP};
   assign memory[ 73] = {`NOP};
   assign memory[ 74] = {`NOP};
+
+  // M to M
+  // lw $t0, 0($t2)
   assign memory[ 75] = {`NOP};
   assign memory[ 76] = {`NOP};
+  // lw $t1, 20($t1) should be same value
   assign memory[ 77] = {`NOP};
   assign memory[ 78] = {`NOP};
   assign memory[ 79] = {`NOP};
+
+  // load followed by dependent ALU
+  // lw $t4, 0($t2)
   assign memory[ 80] = {`NOP};
+  // add $t0, $t4, $t4
   assign memory[ 81] = {`NOP};
   assign memory[ 82] = {`NOP};
   assign memory[ 83] = {`NOP};
@@ -197,7 +243,11 @@ module irom(clka, addra, douta);
   assign memory[ 87] = {`NOP};
   assign memory[ 88] = {`NOP};
   assign memory[ 89] = {`NOP};
+
+  // load followed by dependent store
+  // lw $t5, 0($t2) loading from 40
   assign memory[ 90] = {`NOP};
+  // sw $t5, 0($t3) storing at 20
   assign memory[ 91] = {`NOP};
   assign memory[ 92] = {`NOP};
   assign memory[ 93] = {`NOP};
@@ -207,7 +257,11 @@ module irom(clka, addra, douta);
   assign memory[ 97] = {`NOP};
   assign memory[ 98] = {`NOP};
   assign memory[ 99] = {`NOP};
+
+  // load followed by dependent branch
+  // lw $t0, 0($t2)
   assign memory[100] = {`NOP};
+  // beq $t0, $t2, branch to 101, same value before load
   assign memory[101] = {`NOP};
   assign memory[102] = {`NOP};
   assign memory[103] = {`NOP};
