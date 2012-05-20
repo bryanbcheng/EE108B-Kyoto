@@ -305,9 +305,9 @@ module Decode(
 
   // assign the Stall signal according to the rules you determine
   // you should avoid stalling when it is not necessary (this is nontrivial)
-  //assign Stall = 1'b0; // this assumes no stalling
+  assign Stall = 1'b0; // this assumes no stalling
 
-  assign Stall = MemToReg_ex && (RegWriteAddr_ex == RsAddr || RegWriteAddr_ex == RtAddr);
+  //assign Stall = MemToReg_ex && (RegWriteAddr_ex == RsAddr || RegWriteAddr_ex == RtAddr);
 
   assign MemWriteData = RtData; // we may write forwarded data to memory
 

@@ -237,7 +237,7 @@ module irom(clka, addra, douta);
   assign memory[ 90] = {`LW, `T2, `T3, 16'd0};
   assign memory[ 91] = {`NOP};
   // add $t0, $t3, $t3
-  assign memory[ 92] = {`ADD, `T3, `T3, `T0, `NULL, `ADD};
+  assign memory[ 92] = {`SPECIAL, `T3, `T3, `T0, `NULL, `ADD};
   assign memory[ 93] = {`NOP};
   assign memory[ 94] = {`NOP};
   assign memory[ 95] = {`NOP};
