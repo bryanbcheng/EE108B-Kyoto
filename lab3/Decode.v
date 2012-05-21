@@ -28,7 +28,7 @@ module Decode(
   RegWriteAddr_ex, RegWriteAddr_mem, RegWriteEn_ex, RegWriteEn_mem, RegWriteData_ex, RegWriteData_mem,
 
   // Stalling
-  MemToReg_ex, instr_if
+  MemToReg_ex
 );
 
   // current instruction data
@@ -67,7 +67,6 @@ module Decode(
 
   // stalling
   input MemToReg_ex;
-  input [31:0] instr_if;
 
 //******************************************************************************
 // instruction field
@@ -298,21 +297,73 @@ module Decode(
     end else begin
       RtData = RtDataIn;
     end
-    
-    // set RsData and RtData here according to forwarding rules
-//    RsData = RsDataIn; // this assumes no forwarding
-//    RtData = RtDataIn;
   end
 
-  // assign the Stall signal according to the rules you determine
-  // you should avoid stalling when it is not necessary (this is nontrivial)
-  assign Stall = 1'b0; // this assumes no stalling
+  //assign Stall = 1'b0; // this assumes no stalling
+  wire check_rs = RegWriteAddr_ex == RsAddr;
+  wire check_rt = RegWriteAddr_ex == RtAddr;
+  wire check_both = check_rs || check_rt;
+  
+  `define select_rs   3'b100
+  `define select_rt   3'b010
+  `define select_both 3'b001
+  `define select_none 3'b000
 
-  //assign Stall = MemToReg_ex && (RegWriteAddr_ex == RsAddr || RegWriteAddr_ex == RtAddr);
-  wire [4:0] RsAddr_if = instr_if[`rs];
-  wire [4:0] RtAddr_if = instr_if[`rt];
-  //assign Stall = MemToReg && (RtAddr == RsAddr_if || RtAddr == RtAddr_if);
+  reg [2:0] read_case;
 
+  always @(op or funct) begin
+    casex({op, funct})
+      {`SPECIAL, `ADD}:  read_case = `select_both;
+      {`SPECIAL, `ADDU}: read_case = `select_both;
+      {`SPECIAL, `SUB}:  read_case = `select_both;
+      {`SPECIAL, `SUBU}: read_case = `select_both;
+      {`SPECIAL, `SLT}:  read_case = `select_both;
+      {`SPECIAL, `SLTU}: read_case = `select_both;
+      {`SPECIAL, `AND}:  read_case = `select_both;
+      {`SPECIAL, `OR}:   read_case = `select_both;
+      {`SPECIAL, `XOR}:  read_case = `select_both;
+      {`SPECIAL, `NOR}:  read_case = `select_both;
+      {`SPECIAL, `SRL}:  read_case = `select_rt;
+      {`SPECIAL, `SRA}:  read_case = `select_rt;
+      {`SPECIAL, `SLL}:  read_case = `select_rt;
+      {`SPECIAL, `SRLV}: read_case = `select_both;
+      {`SPECIAL, `SRAV}: read_case = `select_both;
+      {`SPECIAL, `SLLV}: read_case = `select_both;
+
+      {`ADDI, `dc6}:     read_case = `select_rs;
+      {`ADDIU, `dc6}:    read_case = `select_rs;
+      {`SLTI, `dc6}:     read_case = `select_rs;
+      {`SLTIU, `dc6}:    read_case = `select_rs;
+      {`ANDI, `dc6}:     read_case = `select_rs;
+      {`ORI, `dc6}:      read_case  = `select_rs;
+      {`XORI, `dc6}:     read_case  = `select_rs;
+
+      {`BEQ, `dc6}:      read_case = `select_both;
+      {`BNE, `dc6}:      read_case = `select_both;
+      {`BLTZ_GEZ, `dc6}: read_case = `select_rs;
+      {`BLEZ, `dc6}:     read_case = `select_rs;
+      {`BGTZ, `dc6}:     read_case = `select_rs;
+
+      {`J, `dc6}:        read_case = `select_none;
+      {`SPECIAL, `JR}:   read_case = `select_rs;
+      {`JAL, `dc6}:      read_case = `select_none;
+      {`SPECIAL, `JALR}: read_case = `select_rs;
+
+      {`LUI, `dc6}:      read_case = `select_none;
+
+      {`LW, `dc6}:       read_case = `select_rs;
+      {`SW, `dc6}:       read_case = `select_both;
+
+      default:           read_case = `select_none;
+    endcase
+  end
+
+  wire read_rs = read_case[2];
+  wire read_rt = read_case[1];
+  wire read_both = read_case[0];
+
+  assign Stall = MemToReg_ex && ((check_rs && read_rs) || (check_rt && read_rt) || (check_both && read_both));
+  
   assign MemWriteData = RtData; // we may write forwarded data to memory
 
 

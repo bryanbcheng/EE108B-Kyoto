@@ -1,0 +1,54 @@
+[timestart] 9378
+[size] 1283 758
+[pos] -1 -1
+*-9.000000 10425 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
+[treeopen] MIPStest.
+[treeopen] MIPStest.mips.
+@22
+MIPStest.mips.ALUOpX_ex[31:0]
+MIPStest.mips.ALUOpX_id[31:0]
+MIPStest.mips.ALUOpY_ex[31:0]
+MIPStest.mips.ALUOpY_id[31:0]
+MIPStest.mips.ALUOp_ex[3:0]
+MIPStest.mips.ALUOp_id[3:0]
+MIPStest.mips.ALUResult_ex[31:0]
+MIPStest.mips.ALUResult_mem[31:0]
+@28
+MIPStest.mips.JumpBranch_id
+MIPStest.mips.JumpReg_id
+MIPStest.mips.JumpTarget_id
+MIPStest.mips.MemToReg_ex
+MIPStest.mips.MemToReg_id
+MIPStest.mips.MemToReg_mem
+@22
+MIPStest.mips.MemWriteData_ex[31:0]
+MIPStest.mips.MemWriteData_id[31:0]
+MIPStest.mips.MemWriteData_mem[31:0]
+@28
+MIPStest.mips.MemWrite_ex
+MIPStest.mips.MemWrite_id
+MIPStest.mips.MemWrite_mem
+@22
+MIPStest.mips.RegWriteAddr_ex[4:0]
+MIPStest.mips.RegWriteAddr_id[4:0]
+MIPStest.mips.RegWriteAddr_mem[4:0]
+MIPStest.mips.RegWriteAddr_wb[4:0]
+MIPStest.mips.RegWriteData_mem[31:0]
+MIPStest.mips.RegWriteData_wb[31:0]
+@28
+MIPStest.mips.RegWriteEn_ex
+MIPStest.mips.RegWriteEn_id
+MIPStest.mips.RegWriteEn_mem
+MIPStest.mips.RegWriteEn_wb
+@22
+MIPStest.mips.RsData_id[31:0]
+MIPStest.mips.RtData_id[31:0]
+MIPStest.mips.instr_id[31:0]
+MIPStest.mips.instr_if[31:0]
+@24
+MIPStest.mips.pc_id[31:0]
+MIPStest.mips.pc_if[31:0]
+@28
+MIPStest.mips.stall
+[pattern_trace] 1
+[pattern_trace] 0
