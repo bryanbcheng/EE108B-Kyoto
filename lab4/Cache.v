@@ -27,17 +27,83 @@ module Cache(
   output reg cache_busy;
   output reg [31:0] dout;
   output reg mainmem_access;
+    
+//******************************************************************************
+// Control signals
+//******************************************************************************
   
-  reg [31:0] cache_data_in;
-  
-  wire [55:0] cache_line;
-  
-  wire valid = cache_line[55];
-  wire [22:0] cache_tag = cache_line[54:32]; 
-  wire [22:0] input_tag = addr[31:9];
-  wire read_hit = re & (input_tag == cache_tag);
+  wire re_delay;
+  wire we_delay;
+  wire mainmem_busy_delay;
 
-  wire [31:0] cache_data = cache_line[31:0];
+  dffr #1 dffr_re_delay(.d(re), .r(rst), .clk(clk), .q(re_delay));
+  dffr #1 dffr_we_delay(.d(we), .r(rst), .clk(clk), .q(we_delay));
+  dffr #1 dffr_mainmem_busy_delay(.d(mainmem_busy), .r(rst), .clk(clk), .q(mainmem_busy_delay));
+
+  always @ (posedge clk)
+    case ({re, re_delay, we, we_delay, mainmem_busy, mainmem_busy_delay})
+      // MemWrite set high
+      6'bxx10xx: begin
+        cache_busy <= 1'b1;
+	mainmem_access <= 1'b1;
+      end
+      // mainmem_busy set low
+      6'bxxxx01: begin
+      　　mainmem_b1'b0;
+      end
+      default: begin
+        cache_busy <= 1'b0;
+	mainmem_access <= 1'b0;
+      end
+    endcase
+
+//******************************************************************************
+// Cache logic
+//******************************************************************************
+
+  `define CACHE_WIDTH	56
+  `define NUM_CACHE	128
+
+  `define valid		55
+  `define tag		54:32
+  `define data		31:0
+
+  wire [`CACHE_WIDTH-1:0] cache1 [`NUM_CACHE-1:0];
+  wire [`CACHE_WIDTH-1:0] cache2 [`NUM_CACHE-1:0];
+
+  reg [31:0] cache_data_in;
+
+  reg [55:0] cache_line1;
+  reg [55:0] cache_line2;
+
+  always @(posedge clk) begin
+    cache_line1 = cache1[addr];
+    cache_line2 = cache2[];
+  end
+
+  //wire [55:0] cache_line = ;
+
+  wire valid1 = cache_line1[`valid];
+  wire valid2 = cache_line2[`valid];
+  wire [22:0] cache_tag1 = cache_line1[`tag];
+  wire [22:0] cache_tag2 = cache_line2[`tag];
   
+  wire [22:0] input_tag = addr[31:9];
   
+  wire read_hit1 = re & (input_tag == cache_tag1);
+  wire read_hit2 = re & (input_tag == cache_tag2);
+
+  wire [31:0] cache_data1 = cache_line[`data];
+  wire [31:0] cache_data2 = cache_line[`data];
+
+  reg [31:0] cache_data;
+
+  always @(posedge clk) begin
+    if (read_hit1)
+      cache_data = cache_data1;
+    else if (read_hit2)
+      cache_data = cache_data2;
+    else
+      cache_data = 32'b0;
+  end
 endmodule
