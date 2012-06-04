@@ -71,6 +71,7 @@ module Cache(
   wire [`CACHE_WIDTH-1:0] cache1 [`NUM_CACHE-1:0];
   wire [`CACHE_WIDTH-1:0] cache2 [`NUM_CACHE-1:0];
 
+  // WHAT IS THIS FOOR??????
   reg [31:0] cache_data_in;
 
   reg [55:0] cache_line1;
@@ -106,4 +107,7 @@ module Cache(
     else
       cache_data = 32'b0;
   end
+  // need to check valid bit, compare to the two??
+  // 128 bit to track LRU
+
 endmodule
