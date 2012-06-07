@@ -28,32 +28,70 @@ module Cache(
   output reg [31:0] dout;
   output reg mainmem_access;
     
+  wire cache_hit;
+
 //******************************************************************************
 // Control signals
 //******************************************************************************
   
-  wire re_delay;
-  wire we_delay;
-  wire mainmem_busy_delay;
+  reg state_write;
+  reg [1:0] state_read;
 
-  dffr #1 dffr_re_delay(.d(re), .r(rst), .clk(clk), .q(re_delay));
-  dffr #1 dffr_we_delay(.d(we), .r(rst), .clk(clk), .q(we_delay));
-  dffr #1 dffr_mainmem_busy_delay(.d(mainmem_busy), .r(rst), .clk(clk), .q(mainmem_busy_delay));
+  reg cache_busy_write;
+  reg cache_busy_read;
 
+  reg mainmem_access_write;
+  reg mainmem_access_read;
+
+  // cache_busy and mainmem_access signals for MemWrite
   always @ (posedge clk)
-    case ({re, re_delay, we, we_delay, mainmem_busy, mainmem_busy_delay})
-      // MemWrite set high
-      6'bxx10xx: begin
-        cache_busy <= 1'b1;
-	mainmem_access <= 1'b1;
+    case ({reset, state_write})
+      2'b00: begin
+        state_write <= we ? 1'b1 : 1'b0;
+	cache_busy_write <= we ? 1'b1 : 1'b0;
+	mainmem_access_write <= we ? 1'b1 : 1'b0;
       end
-      // mainmem_busy set low
-      6'bxxxx01: begin
-      　　mainmem_b1'b0;
+      2'b01: begin
+        state_write <= mainmem_busy ? 1'b1 : 1'b0;
+	cache_busy_write <= mainmem_busy ? 1'b1 : 1'b0;
+	mainmem_access_write <=	mainmem_busy ? 1'b1 : 1'b0;
       end
       default: begin
-        cache_busy <= 1'b0;
-	mainmem_access <= 1'b0;
+        state_write <= 1'b0;
+	cache_busy_write <= 1'b0;
+	mainmem_access_write <= 1'b0;
+      end
+    endcase
+
+  // cache_busy and mainmem_access signals for MemRead
+  always @ (posedge clk)
+    case ({reset, state_read})
+      3'b000: begin
+        state_read <= re ? 2'b01 : 2'b00;
+        cache_busy_read <= 1'b0;
+        mainmem_access_read <= 1'b0;
+      end
+      3'b001: begin
+        state_read <= cache_hit ? 2'b11 : 2'b10;
+        cache_busy_read <= cache_hit ? 1'b1 : 1'b0;
+        mainmem_access_read <= cache_hit ? 1'b1 : 1'b0;
+      end
+      // cache miss
+      3'b010: begin
+        state_read <= mainmem_busy ? 2'b10 : 2'b00;
+        cache_busy_read <= mainmem_busy ? 1'b1 : 1'b0;
+        mainmem_access_read <= mainmem_busy ? 1'b1 : 1'b0;
+      end
+      // cache hit
+      3'b011: begin
+        state_read <= 2'b00;
+        cache_busy_read <= 1'b0;
+        mainmem_access_read <= 1'b0;
+      end
+      default: begin
+        state_write <= 2'b00;
+        cache_busy_write <= 1'b0;
+        mainmem_access_write <= 1'b0;
       end
     endcase
 
@@ -79,10 +117,8 @@ module Cache(
 
   always @(posedge clk) begin
     cache_line1 = cache1[addr];
-    cache_line2 = cache2[];
+    cache_line2 = cache2[addr];
   end
-
-  //wire [55:0] cache_line = ;
 
   wire valid1 = cache_line1[`valid];
   wire valid2 = cache_line2[`valid];
@@ -91,8 +127,8 @@ module Cache(
   
   wire [22:0] input_tag = addr[31:9];
   
-  wire read_hit1 = re & (input_tag == cache_tag1);
-  wire read_hit2 = re & (input_tag == cache_tag2);
+  wire read_hit1 = re & valid1 & (input_tag == cache_tag1);
+  wire read_hit2 = re & valid2 & (input_tag == cache_tag2);
 
   wire [31:0] cache_data1 = cache_line[`data];
   wire [31:0] cache_data2 = cache_line[`data];
@@ -107,7 +143,15 @@ module Cache(
     else
       cache_data = 32'b0;
   end
-  // need to check valid bit, compare to the two??
+  
+  assign cache_hit = read_hit1 || read_hit2;
+
   // 128 bit to track LRU
+
+//******************************************************************************
+// Cache write
+//******************************************************************************
+
+  
 
 endmodule
