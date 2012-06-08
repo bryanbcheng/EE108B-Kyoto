@@ -107,31 +107,41 @@ module irom(clk, addr, dout);
   // this is a write miss followed by a read hit
   assign memory[  3] = {`SW, `T0, `T1, 16'd4}; // store 100 at address 8
   assign memory[  4] = {`LW,`T0, `T2, 16'd4}; // load it into $t2
-
   // use an address with the same index but different tag to demonstrate write misses
   // this is a write miss followed by a read miss
   assign memory[  5] = {`ADDI, `T2, `T1, 16'd420}; //make T1 = 520  
-  assign memory[  6] = {`SW, `T1, `T0, 16'd0}; //store 4 at address 520 (should overwrite the cache)
+  assign memory[  6] = {`SW, `T1, `T0, 16'd0}; //store 4 at address 520 (should store in 2nd cache)
   
-  // loading from address 8 again will incur a read miss because we replaced the entry
-  assign memory[  7] = {`ORI, `ZERO, `T0, 16'd8}; //get address 8 of the cache
-  assign memory[  8] = {`LW, `T0, `T3, 16'd0}; // load from this address
+  assign memory[  7] = {`ADDI, `ZERO, `T2, 16'd264}; //make T2 = 264  
+  assign memory[  8] = {`SW, `T1, `T0, 16'd0}; //store 4 at address 264 (should overwrite cache1)
+  
+
+ // loading from address 8 again will incur a read miss because we replaced the entry
+  assign memory[  9] = {`ORI, `ZERO, `T0, 16'd8}; //get address 8 of the cache
+  assign memory[  10] = {`LW, `T0, `T3, 16'd0}; // load from this address
 
   // verify that the data we got was correct (i.e., read from memory, not the cache.)
-  assign memory[  9] = {`SPECIAL, `T3, `T0, `T4, `NULL, `ADD};
+  assign memory[  11] = {`SPECIAL, `T3, `T0, `T4, `NULL, `ADD};
 
   // now testing what happens when we write hit
-  assign memory[ 10] = {`SW, `ZERO, `T4, 16'd8};
+  assign memory[ 12] = {`SW, `ZERO, `T4, 16'd8};
 
-  // try another read miss, this time on address 520, which still contains 4
-  assign memory[ 11] = {`ORI, `ZERO, `T5, 16'd520};
-  assign memory[ 12] = {`LW, `T5, `T2, 16'd0};
-  assign memory[ 13] = {`LW, `T5, `T3, 16'd0};
+  // check 2nd cache still there, address 520 which contains 4
+  assign memory[ 13] = {`ORI, `ZERO, `T5, 16'd520};
+  assign memory[ 14] = {`LW, `T5, `T2, 16'd0};
+
+  // read word at 264, read miss, and then read hit should replace cache 1 again because 
+  // just read from cache 2
+  assign memory[ 15] = {`ORI, `ZERO, `T5, 16'd264};
+  assign memory[ 16] = {`LW, `T5, `T2, 16'd0};
+  assign memory[ 17] = {`LW, `T5, `T3, 16'd0};
+
+
   // and read hit on the same address
-  assign memory[ 14] = {`NOOP}; 
+  assign memory[ 18] = {`NOOP}; 
 
   // nothing to see here
-  assign memory[ 15] = {`NOOP};
+  assign memory[ 19] = {`NOOP};
   assign memory[ 16] = {`NOOP};
   assign memory[ 17] = {`NOOP};
   assign memory[ 18] = {`NOOP};
