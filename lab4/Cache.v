@@ -129,7 +129,6 @@ module Cache(
 //******************************************************************************
 // Cache logic
 //******************************************************************************
-
   `define CACHE_WIDTH	56
   `define NUM_CACHE	128
 
@@ -180,19 +179,40 @@ module Cache(
   
   assign cache_hit = read_hit1 || read_hit2;
 
-  // 128 bit to track LRU
-
 //******************************************************************************
 // Cache write
 //******************************************************************************
 
-  wire [55:0] cache_entry;
+  wire [55:0] cache_entry_write;
+  wire [55:0] cache_entry_read;
 
-  assign cache_entry = {1'b1, input_tag, reg_data};
+  assign cache_entry_write = {1'b1, input_tag, reg_data};
+  assign cache_entry_read = {1'b1, input_tag, dram_data};
+
+  // 128 bit to track LRU
+  reg mru_bits [127:0];
 
   always @(posedge clk) begin
-    if (we)
-      cache1[addr[`addr_index]] <= cache_entry;
+    if (we) begin 
+      if (mru_bits[addr[`addr_index]] == 1'b0) begin
+        cache2[addr[`addr_index]] <= cache_entry_write;
+        mru_bits[addr[`addr_index]] <= 1'b1;
+      end
+      else begin
+        cache1[addr[`addr_index]] <= cache_entry_write;
+        mru_bits[addr[`addr_index]] <= 1'b0;
+      end
+    end
+    else if (state_read == 3'b100) begin
+      if (mru_bits[addr[`addr_index]] == 1'b0) begin
+        cache2[addr[`addr_index]] <= cache_entry_read;
+        mru_bits[addr[`addr_index]] <= 1'b1;
+      end
+      else begin
+        cache1[addr[`addr_index]] <= cache_entry_read;
+        mru_bits[addr[`addr_index]] <= 1'b0;
+      end
+    end
   end
     
 
@@ -203,8 +223,10 @@ module Cache(
   always @ (posedge clk) begin
     if (cache_hit)
       dout <= cache_data;
-    else if ()
-
+    else if (state_read == 3'b100)
+      dout <= dram_data;    
+    else
+      dout <= 32'b0;
   end
 
 endmodule
