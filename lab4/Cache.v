@@ -33,9 +33,9 @@ module Cache(
 //******************************************************************************
 // Control signals
 //******************************************************************************
-  
+ 
   reg [2:0] state_write;
-  reg [2:0] state_read;
+  reg [3:0] state_read;
 
   reg cache_busy_write;
   reg cache_busy_read;
@@ -72,7 +72,7 @@ module Cache(
       4'b0100: begin
 	state_write <= 3'b000;
 	cache_busy_write <= 1'b0;
-	mainmem_acccess_write <= 1'b0;
+	mainmem_access_write <= 1'b0;
       end
       default: begin
         state_write <= 3'b000;
@@ -84,48 +84,67 @@ module Cache(
   // cache_busy and mainmem_access signals for MemRead
   always @ (posedge clk)
     case ({rst, state_read})
-      4'b0000: begin
-        state_read <= re ? 3'b001 : 3'b000;
+      5'b0000: begin
+        state_read <= re ? 4'b0001 : 4'b0000;
         cache_busy_read <= 1'b0;
         mainmem_access_read <= 1'b0;
       end
-      4'b0001: begin
+      5'b00001: begin
         if (cache_hit) begin
-	  state_read <= 3'b100;
+	  state_read <= 4'b1000;
 	  cache_busy_read <= 1'b0;
 	  mainmem_access_read <= 1'b0;
 	end
 	else begin
-	  state_read <= 3'b010;
+	  state_read <= 4'b0010;
 	  cache_busy_read <= 1'b1;
 	  mainmem_access_read <= 1'b1;
 	end
       end
       // cache miss
-      4'b0010: begin
-        state_read <= 3'b011;
+      5'b00010: begin
+        state_read <= 4'b0011;
 	cache_busy_read <= 1'b1;
 	mainmem_access_read <= 1'b1;
       end
-      4'b0011: begin
-        state_read <= mainmem_busy ? 3'b011 : 3'b100;
+      5'b00011: begin
+        state_read <= 4'b0100;
+        cache_busy_read <= 1'b1;
+        mainmem_access_read <= 1'b1;
+      end
+      5'b00100: begin
+        state_read <= 4'b0101;
+        cache_busy_read <= 1'b1;
+        mainmem_access_read <= 1'b1;
+      end
+      5'b00101: begin
+        state_read <= 4'b0110;
+        cache_busy_read <= 1'b1;
+        mainmem_access_read <= 1'b1;
+      end
+      5'b00110: begin
+        state_read <= 4'b0111;
+	cache_busy_read <= 1'b1;
+	mainmem_access_read <= 1'b1;
+      end
+      5'b00111: begin
+        state_read <= mainmem_busy ? 4'b0111 : 4'b1000;
         cache_busy_read <= mainmem_busy;
         mainmem_access_read <= mainmem_busy;
       end
-      // same as cache hit, but need for storing in cache
-      4'b0100: begin
-        state_read <= re ? 3'b101: 3'b000;
+      // cache hit
+      5'b01000: begin
+        state_read <= 4'b1001;
         cache_busy_read <= 1'b0;
         mainmem_access_read <= 1'b0;
       end
-      // cache hit
-      4'b0101: begin
-        state_read <= re ? 3'b101: 3'b000;
+      5'b01001: begin
+        state_read <= 4'b0000;
         cache_busy_read <= 1'b0;
         mainmem_access_read <= 1'b0;
       end
       default: begin
-        state_read <= 3'b000;
+        state_read <= 4'b0000;
         cache_busy_read <= 1'b0;
         mainmem_access_read <= 1'b0;
       end
@@ -196,7 +215,7 @@ module Cache(
 
   // 128 bit to track LRU
   reg mru_bits [127:0];
-
+/*
   always @(posedge clk) begin
     if (we) begin 
       if (mru_bits[addr[`addr_index]] == 1'b0) begin
@@ -219,7 +238,15 @@ module Cache(
       end
     end
   end
-    
+  */
+
+  always @(posedge clk) begin
+    if (we)
+        cache1[addr[`addr_index]] <= cache_entry_write;
+    else if (state_read == 3'b110)
+        cache1[addr[`addr_index]] <= cache_entry_read;
+  end
+  
 
 //******************************************************************************
 // Data output
@@ -228,8 +255,6 @@ module Cache(
   always @ (posedge clk) begin
     if (cache_hit)
       dout <= cache_data;
-    else if (state_read == 3'b100)
-      dout <= dram_data;    
     else
       dout <= 32'b0;
   end
