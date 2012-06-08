@@ -72,7 +72,7 @@ module Cache(
       4'b0100: begin
 	state_write <= 3'b000;
 	cache_busy_write <= 1'b0;
-	mainmem_acccess_write <= 1'b0;
+	mainmem_access_write <= 1'b0;
       end
       default: begin
         state_write <= 3'b000;
