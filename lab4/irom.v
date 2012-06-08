@@ -112,8 +112,8 @@ module irom(clk, addr, dout);
   assign memory[  5] = {`ADDI, `T2, `T1, 16'd420}; //make T1 = 520  
   assign memory[  6] = {`SW, `T1, `T0, 16'd0}; //store 4 at address 520 (should store in 2nd cache)
   
-  assign memory[  7] = {`ADDI, `ZERO, `T2, 16'd264}; //make T2 = 264  
-  assign memory[  8] = {`SW, `T1, `T0, 16'd0}; //store 4 at address 264 (should overwrite cache1)
+  assign memory[  7] = {`ADDI, `ZERO, `T2, 16'd1032}; //make T2 = 1032  
+  assign memory[  8] = {`SW, `T2, `T0, 16'd0}; //store 4 at address 1032 (should overwrite cache1)
   
 
  // loading from address 8 again will incur a read miss because we replaced the entry
@@ -126,13 +126,13 @@ module irom(clk, addr, dout);
   // now testing what happens when we write hit
   assign memory[ 12] = {`SW, `ZERO, `T4, 16'd8};
 
-  // check 2nd cache still there, address 520 which contains 4
-  assign memory[ 13] = {`ORI, `ZERO, `T5, 16'd520};
+  // check 1st cache still there, address 1032 which contains 4
+  assign memory[ 13] = {`ORI, `ZERO, `T5, 16'd1032};
   assign memory[ 14] = {`LW, `T5, `T2, 16'd0};
 
-  // read word at 264, read miss, and then read hit should replace cache 1 again because 
+  // read word at 520, read miss, and then read hit should replace cache 2 again because 
   // just read from cache 2
-  assign memory[ 15] = {`ORI, `ZERO, `T5, 16'd264};
+  assign memory[ 15] = {`ORI, `ZERO, `T5, 16'd520};
   assign memory[ 16] = {`LW, `T5, `T2, 16'd0};
   assign memory[ 17] = {`LW, `T5, `T3, 16'd0};
 
@@ -141,10 +141,6 @@ module irom(clk, addr, dout);
   assign memory[ 18] = {`NOOP}; 
 
   // nothing to see here
-  assign memory[ 19] = {`NOOP};
-  assign memory[ 16] = {`NOOP};
-  assign memory[ 17] = {`NOOP};
-  assign memory[ 18] = {`NOOP};
   assign memory[ 19] = {`NOOP};
   assign memory[ 20] = {`NOOP};
   assign memory[ 21] = {`NOOP};

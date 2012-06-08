@@ -214,10 +214,10 @@ module Cache(
   assign cache_entry_read = {1'b1, input_tag, dram_data};
 
   // 128 bit to track LRU
-  reg mru_bits [127:0];
+  reg [127:0] mru_bits;
 
   always @(posedge clk) begin
-    if (we) begin 
+    if (we && state_write == 3'b011) begin 
       if (hit1) begin
         cache1[addr[`addr_index]] <= cache_entry_write;
 	mru_bits[addr[`addr_index]] <= 1'b0;
@@ -229,6 +229,10 @@ module Cache(
       else if (mru_bits[addr[`addr_index]] == 1'b0) begin
         cache2[addr[`addr_index]] <= cache_entry_write;
         mru_bits[addr[`addr_index]] <= 1'b1;
+      end
+      else if (mru_bits[addr[`addr_index]] == 1'b1) begin
+        cache1[addr[`addr_index]] <= cache_entry_write;
+        mru_bits[addr[`addr_index]] <= 1'b0;
       end
       else begin
         cache1[addr[`addr_index]] <= cache_entry_write;
