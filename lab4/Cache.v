@@ -24,9 +24,9 @@ module Cache(
   input [31:0] dram_data;
   input [31:0] reg_data;
   
-  output reg cache_busy;
+  output cache_busy;
   output reg [31:0] dout;
-  output reg mainmem_access;
+  output mainmem_access;
     
   wire cache_hit;
 
@@ -34,7 +34,7 @@ module Cache(
 // Control signals
 //******************************************************************************
   
-  reg state_write;
+  reg [1:0] state_write;
   reg [1:0] state_read;
 
   reg cache_busy_write;
@@ -42,22 +42,35 @@ module Cache(
 
   reg mainmem_access_write;
   reg mainmem_access_read;
-
+  
+  assign cache_busy = (we && cache_busy_write) || (re && cache_busy_read);
+  assign mainmem_access = (we && mainmem_access_write) || (re && mainmem_access_read);
+  
   // cache_busy and mainmem_access signals for MemWrite
   always @ (posedge clk)
-    case ({reset, state_write})
-      2'b00: begin
-        state_write <= we ? 1'b1 : 1'b0;
-	cache_busy_write <= we ? 1'b1 : 1'b0;
-	mainmem_access_write <= we ? 1'b1 : 1'b0;
+    case ({rst, state_write})
+      3'b000: begin
+        state_write <= we ? 2'b01 : 2'b00;
+	cache_busy_write <= we;
+	mainmem_access_write <= we;
       end
-      2'b01: begin
-        state_write <= mainmem_busy ? 1'b1 : 1'b0;
-	cache_busy_write <= mainmem_busy ? 1'b1 : 1'b0;
-	mainmem_access_write <=	mainmem_busy ? 1'b1 : 1'b0;
+      3'b001: begin
+        state_write <= 2'b10;
+	cache_busy_write <= 1'b1;
+	mainmem_access_write <=	1'b1;
+      end
+      3'b010: begin
+        state_write <= mainmem_busy ? 2'b10 : 2'b11;
+        cache_busy_write <= mainmem_busy;
+        mainmem_access_write <= mainmem_busy;
+      end
+      3'b011: begin
+      	state_write <= we ? 2'b11 : 2'b00;
+	cache_busy_write <= 1'b0;
+	mainmem_access_write <= 1'b0;
       end
       default: begin
-        state_write <= 1'b0;
+        state_write <= 2'b00;
 	cache_busy_write <= 1'b0;
 	mainmem_access_write <= 1'b0;
       end
@@ -65,7 +78,7 @@ module Cache(
 
   // cache_busy and mainmem_access signals for MemRead
   always @ (posedge clk)
-    case ({reset, state_read})
+    case ({rst, state_read})
       3'b000: begin
         state_read <= re ? 2'b01 : 2'b00;
         cache_busy_read <= 1'b0;
@@ -73,25 +86,25 @@ module Cache(
       end
       3'b001: begin
         state_read <= cache_hit ? 2'b11 : 2'b10;
-        cache_busy_read <= cache_hit ? 1'b1 : 1'b0;
-        mainmem_access_read <= cache_hit ? 1'b1 : 1'b0;
+        cache_busy_read <= !cache_hit;
+        mainmem_access_read <= !cache_hit;
       end
       // cache miss
       3'b010: begin
-        state_read <= mainmem_busy ? 2'b10 : 2'b00;
-        cache_busy_read <= mainmem_busy ? 1'b1 : 1'b0;
-        mainmem_access_read <= mainmem_busy ? 1'b1 : 1'b0;
+        state_read <= mainmem_busy ? 2'b10 : 2'b11;
+        cache_busy_read <= mainmem_busy;
+        mainmem_access_read <= mainmem_busy;
       end
       // cache hit
       3'b011: begin
-        state_read <= 2'b00;
+        state_read <= re ? 2'b11: 2'b00;
         cache_busy_read <= 1'b0;
         mainmem_access_read <= 1'b0;
       end
       default: begin
-        state_write <= 2'b00;
-        cache_busy_write <= 1'b0;
-        mainmem_access_write <= 1'b0;
+        state_read <= 2'b00;
+        cache_busy_read <= 1'b0;
+        mainmem_access_read <= 1'b0;
       end
     endcase
 
@@ -106,18 +119,18 @@ module Cache(
   `define tag		54:32
   `define data		31:0
 
-  wire [`CACHE_WIDTH-1:0] cache1 [`NUM_CACHE-1:0];
-  wire [`CACHE_WIDTH-1:0] cache2 [`NUM_CACHE-1:0];
+  `define addr_tag	31:9
+  `define addr_index	8:2
 
-  // WHAT IS THIS FOOR??????
-  reg [31:0] cache_data_in;
+  reg [`CACHE_WIDTH-1:0] cache1 [`NUM_CACHE-1:0];
+  reg [`CACHE_WIDTH-1:0] cache2 [`NUM_CACHE-1:0];
 
   reg [55:0] cache_line1;
   reg [55:0] cache_line2;
 
   always @(posedge clk) begin
-    cache_line1 = cache1[addr];
-    cache_line2 = cache2[addr];
+    cache_line1 = cache1[addr[`addr_index]];
+    cache_line2 = cache2[addr[`addr_index]];
   end
 
   wire valid1 = cache_line1[`valid];
@@ -125,23 +138,26 @@ module Cache(
   wire [22:0] cache_tag1 = cache_line1[`tag];
   wire [22:0] cache_tag2 = cache_line2[`tag];
   
-  wire [22:0] input_tag = addr[31:9];
+  wire [22:0] input_tag = addr[`addr_tag];
   
   wire read_hit1 = re & valid1 & (input_tag == cache_tag1);
   wire read_hit2 = re & valid2 & (input_tag == cache_tag2);
 
-  wire [31:0] cache_data1 = cache_line[`data];
-  wire [31:0] cache_data2 = cache_line[`data];
+  wire [31:0] cache_data1 = cache_line1[`data];
+  wire [31:0] cache_data2 = cache_line2[`data];
 
-  reg [31:0] cache_data;
+  //reg [31:0] cache_data;
 
   always @(posedge clk) begin
     if (read_hit1)
-      cache_data = cache_data1;
+      //cache_data = cache_data1;
+      dout <= cache_data1;
     else if (read_hit2)
-      cache_data = cache_data2;
+      //cache_data = cache_data2;
+      dout <= cache_data2;
     else
-      cache_data = 32'b0;
+      //cache_data = 32'b0;
+      dout <= 32'b0;
   end
   
   assign cache_hit = read_hit1 || read_hit2;
@@ -152,6 +168,14 @@ module Cache(
 // Cache write
 //******************************************************************************
 
-  
+  wire [55:0] cache_entry;
+
+  assign cache_entry = {1'b1, input_tag, reg_data};
+
+  always @(posedge clk) begin
+    if (we)
+      cache1[addr[`addr_index]] <= cache_entry;
+  end
+    
 
 endmodule
