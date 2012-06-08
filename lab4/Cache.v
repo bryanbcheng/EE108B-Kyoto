@@ -181,8 +181,11 @@ module Cache(
   
   wire [22:0] input_tag = addr[`addr_tag];
   
-  wire read_hit1 = re & valid1 & (input_tag == cache_tag1);
-  wire read_hit2 = re & valid2 & (input_tag == cache_tag2);
+  wire hit1 = valid1 & (input_tag == cache_tag1);
+  wire hit2 = valid2 & (input_tag == cache_tag2);
+
+  wire read_hit1 = re & hit1;
+  wire read_hit2 = re & hit2;
 
   wire [31:0] cache_data1 = cache_line1[`data];
   wire [31:0] cache_data2 = cache_line2[`data];
@@ -192,13 +195,10 @@ module Cache(
   always @(posedge clk) begin
     if (read_hit1)
       cache_data = cache_data1;
-      //dout <= cache_data1;
     else if (read_hit2)
       cache_data = cache_data2;
-      //dout <= cache_data2;
     else
       cache_data = 32'b0;
-      //dout <= 32'b0;
   end
   
   assign cache_hit = read_hit1 || read_hit2;
@@ -215,10 +215,18 @@ module Cache(
 
   // 128 bit to track LRU
   reg mru_bits [127:0];
-/*
+
   always @(posedge clk) begin
     if (we) begin 
-      if (mru_bits[addr[`addr_index]] == 1'b0) begin
+      if (hit1) begin
+        cache1[addr[`addr_index]] <= cache_entry_write;
+	mru_bits[addr[`addr_index]] <= 1'b0;
+      end
+      else if (hit2) begin
+        cache2[addr[`addr_index]] <= cache_entry_write;
+        mru_bits[addr[`addr_index]] <= 1'b1;
+      end
+      else if (mru_bits[addr[`addr_index]] == 1'b0) begin
         cache2[addr[`addr_index]] <= cache_entry_write;
         mru_bits[addr[`addr_index]] <= 1'b1;
       end
@@ -227,7 +235,7 @@ module Cache(
         mru_bits[addr[`addr_index]] <= 1'b0;
       end
     end
-    else if (state_read == 3'b100) begin
+    else if (state_read == 4'b0110) begin
       if (mru_bits[addr[`addr_index]] == 1'b0) begin
         cache2[addr[`addr_index]] <= cache_entry_read;
         mru_bits[addr[`addr_index]] <= 1'b1;
@@ -237,16 +245,21 @@ module Cache(
         mru_bits[addr[`addr_index]] <= 1'b0;
       end
     end
+    else if (state_read == 4'b1000) begin
+      if (hit1)
+        mru_bits[addr[`addr_index]] <= 1'b0;
+      else if (hit2)
+        mru_bits[addr[`addr_index]] <= 1'b1;
+    end
   end
-  */
-
+/*
   always @(posedge clk) begin
     if (we)
         cache1[addr[`addr_index]] <= cache_entry_write;
     else if (state_read == 3'b110)
         cache1[addr[`addr_index]] <= cache_entry_read;
   end
-  
+*/
 
 //******************************************************************************
 // Data output
