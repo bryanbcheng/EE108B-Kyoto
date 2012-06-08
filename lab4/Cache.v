@@ -92,7 +92,6 @@ module Cache(
       // cache miss
       3'b010: begin
         state_read <= mainmem_busy ? 2'b10 : 2'b11;
-        cache_busy_read <= mainmem_busy;
         mainmem_access_read <= mainmem_busy;
       end
       // cache hit
@@ -110,8 +109,6 @@ module Cache(
 
 //******************************************************************************
 // Cache logic
-//******************************************************************************
-
   `define CACHE_WIDTH	56
   `define NUM_CACHE	128
 
@@ -163,7 +160,7 @@ module Cache(
   assign cache_hit = read_hit1 || read_hit2;
 
   // 128 bit to track LRU
-
+  reg mru_bits [127:0];
 //******************************************************************************
 // Cache write
 //******************************************************************************
@@ -173,8 +170,16 @@ module Cache(
   assign cache_entry = {1'b1, input_tag, reg_data};
 
   always @(posedge clk) begin
-    if (we)
-      cache1[addr[`addr_index]] <= cache_entry;
+    if (we) begin 
+      if (mru_bits[addr[`addr_index]] == 1'b0) begin
+        cache2[addr[`addr_index]] <= cache_entry;
+        mru_bits[addr[`addr_index]] <= 1'b1;
+      end
+      else begin
+        cache1[addr[`addr_index]] <= cache_entry;
+        mru_bits[addr[`addr_index]] <= 1'b0;
+      end
+    end
   end
     
 
