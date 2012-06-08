@@ -33,8 +33,8 @@ module Cache(
 //******************************************************************************
 // Control signals
 //******************************************************************************
-  
-  reg [1:0] state_write;
+ 
+  reg [2:0] state_write;
   reg [3:0] state_read;
 
   reg cache_busy_write;
@@ -49,28 +49,33 @@ module Cache(
   // cache_busy and mainmem_access signals for MemWrite
   always @ (posedge clk)
     case ({rst, state_write})
-      3'b000: begin
-        state_write <= we ? 2'b01 : 2'b00;
+      4'b0000: begin
+        state_write <= we ? 3'b001 : 3'b000;
 	cache_busy_write <= we;
 	mainmem_access_write <= we;
       end
-      3'b001: begin
-        state_write <= 2'b10;
+      4'b0001: begin
+        state_write <= 3'b010;
 	cache_busy_write <= 1'b1;
 	mainmem_access_write <=	1'b1;
       end
-      3'b010: begin
-        state_write <= mainmem_busy ? 2'b10 : 2'b11;
+      4'b0010: begin
+        state_write <= mainmem_busy ? 3'b010 : 3'b011;
         cache_busy_write <= mainmem_busy;
         mainmem_access_write <= mainmem_busy;
       end
-      3'b011: begin
-      	state_write <= we ? 2'b11 : 2'b00;
+      4'b0011: begin
+      	state_write <= 3'b100;
+	cache_busy_write <= mainmem_busy;
+	mainmem_access_write <= mainmem_busy;
+      end
+      4'b0100: begin
+	state_write <= 3'b000;
 	cache_busy_write <= 1'b0;
-	mainmem_access_write <= 1'b0;
+	mainmem_acccess_write <= 1'b0;
       end
       default: begin
-        state_write <= 2'b00;
+        state_write <= 3'b000;
 	cache_busy_write <= 1'b0;
 	mainmem_access_write <= 1'b0;
       end
@@ -250,10 +255,6 @@ module Cache(
   always @ (posedge clk) begin
     if (cache_hit)
       dout <= cache_data;
-    //else if (state_read == 4'b110)
-      //dout <= dram_data;
-    //else if (state_read > 4'b110)
-      //dout = dout;
     else
       dout <= 32'b0;
   end
