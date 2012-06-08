@@ -35,7 +35,7 @@ module Cache(
 //******************************************************************************
   
   reg [1:0] state_write;
-  reg [1:0] state_read;
+  reg [2:0] state_read;
 
   reg cache_busy_write;
   reg cache_busy_read;
@@ -79,30 +79,48 @@ module Cache(
   // cache_busy and mainmem_access signals for MemRead
   always @ (posedge clk)
     case ({rst, state_read})
-      3'b000: begin
-        state_read <= re ? 2'b01 : 2'b00;
+      4'b0000: begin
+        state_read <= re ? 3'b001 : 3'b000;
         cache_busy_read <= 1'b0;
         mainmem_access_read <= 1'b0;
       end
-      3'b001: begin
-        state_read <= cache_hit ? 2'b11 : 2'b10;
-        cache_busy_read <= !cache_hit;
-        mainmem_access_read <= !cache_hit;
+      4'b0001: begin
+        if (cache_hit) begin
+	  state_read <= 3'b100;
+	  cache_busy_read <= 1'b0;
+	  mainmem_access_read <= 1'b0;
+	end
+	else begin
+	  state_read <= 3'b010;
+	  cache_busy_read <= 1'b1;
+	  mainmem_access_read <= 1'b1;
+	end
       end
       // cache miss
-      3'b010: begin
-        state_read <= mainmem_busy ? 2'b10 : 2'b11;
+      4'b0010: begin
+        state_read <= 3'b011;
+	cache_busy_read <= 1'b1;
+	mainmem_access_read <= 1'b1;
+      end
+      4'b0011: begin
+        state_read <= mainmem_busy ? 3'b011 : 3'b100;
         cache_busy_read <= mainmem_busy;
         mainmem_access_read <= mainmem_busy;
       end
+      // same as cache hit, but need for storing in cache
+      4'b0100: begin
+        state_read <= re ? 3'b101: 3'b000;
+        cache_busy_read <= 1'b0;
+        mainmem_access_read <= 1'b0;
+      end
       // cache hit
-      3'b011: begin
-        state_read <= re ? 2'b11: 2'b00;
+      4'b0101: begin
+        state_read <= re ? 3'b101: 3'b000;
         cache_busy_read <= 1'b0;
         mainmem_access_read <= 1'b0;
       end
       default: begin
-        state_read <= 2'b00;
+        state_read <= 3'b000;
         cache_busy_read <= 1'b0;
         mainmem_access_read <= 1'b0;
       end
@@ -146,18 +164,18 @@ module Cache(
   wire [31:0] cache_data1 = cache_line1[`data];
   wire [31:0] cache_data2 = cache_line2[`data];
 
-  //reg [31:0] cache_data;
+  reg [31:0] cache_data;
 
   always @(posedge clk) begin
     if (read_hit1)
-      //cache_data = cache_data1;
-      dout <= cache_data1;
+      cache_data = cache_data1;
+      //dout <= cache_data1;
     else if (read_hit2)
-      //cache_data = cache_data2;
-      dout <= cache_data2;
+      cache_data = cache_data2;
+      //dout <= cache_data2;
     else
-      //cache_data = 32'b0;
-      dout <= 32'b0;
+      cache_data = 32'b0;
+      //dout <= 32'b0;
   end
   
   assign cache_hit = read_hit1 || read_hit2;
@@ -177,5 +195,16 @@ module Cache(
       cache1[addr[`addr_index]] <= cache_entry;
   end
     
+
+//******************************************************************************
+// Data output
+//******************************************************************************
+
+  always @ (posedge clk) begin
+    if (cache_hit)
+      dout <= cache_data;
+    else if ()
+
+  end
 
 endmodule
